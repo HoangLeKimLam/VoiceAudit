@@ -1,0 +1,29 @@
+# Nhánh `lane/p4` — bạn là **P4**
+
+> Claude Code tự đọc tệp này khi mở kho. Tệp chỉ cho biết bạn là ai, đọc gì, đối chiếu với ai — **không** phải hướng giải.
+
+## Bạn là
+**P4** — Nhãn 03 lời thật: ghép / chèn, xoá lời. Việc của lane: `lanes/P4/CLAUDE.md`. Dữ liệu của lane: `lanes/P4/DU_LIEU.md`.
+
+## Đọc theo thứ tự (lần đầu)
+1. `VoiceAudit_6Muc.html` — bản đề xuất đã nộp, gốc của mọi mục tiêu (không sửa).
+2. `lanes/BAT_DAU.md` → `lanes/CHUNG.md` → `lanes/P4/CLAUDE.md` → `lanes/DU_LIEU.md` → `lanes/P4/DU_LIEU.md`.
+3. **Chưa** đọc `lanes/P4/Y_TUONG.md`, `lanes/Y_TUONG_CHUNG.md`, `lanes/HUONG_PHUONG_PHAP.md` cho tới khi đã tự đề xuất 2–3 hướng của riêng mình (`lanes/BAT_DAU.md` mục 11).
+
+## Cố định — để ghép không xung đột (còn lại tự do)
+- Phạm vi phải phủ, dạng nhãn và định dạng: `lanes/DU_LIEU.md` mục 2–3, `lanes/P4/DU_LIEU.md` mục 1–3.
+- Hợp đồng nộp và ngân sách vu oan: `lanes/CHUNG.md` §3–4. Đo trên cùng thước: `python -m v6.product.ghep_thu`.
+- Trước khi nộp dữ liệu: `python -m v6.data.kiem_bo <manifest> --moi` phải ĐẠT, và `python -m v6.data.lockbox check <manifest>`.
+- Luật cứng: `lanes/CHUNG.md` §2.
+
+## Kiểm tính đồng nhất với lane khác
+Đọc thêm (không sửa) phần ranh giới của các lane liên quan:
+- **P5** — đoạn chèn do người thật nói = 03 ghép (bạn), do máy tạo = 03 giọng máy (P5); Req 6: ghép thật không bị gọi là máy: `lanes/P5/DU_LIEU.md` mục 2.
+- **P3** — tệp vừa ghép vừa khử ồn / đổi giọng: thêm dòng 02 riêng, không gộp: `lanes/P3/DU_LIEU.md` mục 2.
+- **P2** — bộ âm cứng (tệp thật) để học tránh vu oan: `lanes/P2/CLAUDE.md`.
+- **P1** — nhận `signs.py` của bạn cho hồ sơ: `lanes/P1/CLAUDE.md`.
+
+Bảng nhãn chung cho mọi lane: `lanes/DU_LIEU.md` mục 2.1–2.3. Thấy mâu thuẫn giữa các tệp thì **không tự sửa tệp lane khác** — ghi `lanes/DE_XUAT/<ngày>_P4_<tên>.md` cho nhóm trưởng (P0).
+
+## Dữ liệu
+Kho git không có dữ liệu. Giải nén `du_lieu_P4.tar` (nhóm trưởng gửi) vào chính thư mục này. Dữ liệu đó chỉ là ví dụ — việc chính là tự thu thập dữ liệu đúng dạng để phủ phạm vi (`lanes/P4/DU_LIEU.md`, đầu tệp).
