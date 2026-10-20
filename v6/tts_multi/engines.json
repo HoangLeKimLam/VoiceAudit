@@ -1,0 +1,1187 @@
+{
+ "_about": "Danh muc may sinh giong (giao dien I3). Khoa bat dau bang '_' la ghi chu. role: train = dung sinh du lieu hoc; heldout = CHI dung cho tap thu (may la). family: cung ho thi khong dung mot ben train mot ben heldout. needs_vc: giong co san, muon nhai nguoi trong kho thi noi tiep may VC. smoke: ket qua thu nhanh do v6/tts_multi/engines/smoke.py ghi. Chay: <env_python> -m v6.tts_multi.run_engine --engine <ten> --jobs <jobs.jsonl> --out <dir> (PYTHONPATH xem v6.tts_multi.command). Truoc khi nap, run_engine kiem commit RAM: can = smoke.peak_commit_mb (hoac min_commit_mb) +10 % +256 MB; may con it hon -> khong nap, ma thoat 3 (tranh no pagefile tren C:); --allow-pagefile-growth de bo kiem; muc can tinh san: v6.tts_multi.commit_required_mb(ten). smoke.code_rev = phien ban adapter luc smoke (thieu = '1'); adapter da doi (Engine.code_rev khac) -> run_engine KHONG nap, ma thoat 1 'smoke cu' cho toi khi smoke lai (--allow-stale-smoke de bo qua).",
+ "_consent": "Chi nhai nguoi trong VIVOS, vox, celeb, EdAcc, AMI, voxp, LibriSpeech; tham chieu la ban ghi KHAC cua cung nguoi; khong nhai nguoi trong am thanh cao, VSS, VSASV, viVoice. Khong dung hynt/F5-TTS-Vietnamese-ViVoice (card cam nhai giong khi chua dong y). Khong phat tan am thanh sinh ra.",
+ "vixtts": {
+  "kind": "tts",
+  "langs": [
+   "vi"
+  ],
+  "family": "xtts",
+  "role": "train",
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "Coqui Public Model License 1.0.0 (phi thuong mai, rang buoc ca dau ra)",
+  "module": "xtts",
+  "opts": {
+   "model_dir": "models/viXTTS",
+   "model_id": "capleaf/viXTTS",
+   "gpt_cond_len": 12
+  },
+  "notes": "XTTS-v2.0.3 fine-tune tren viVoice. Kem voi cau < 10 tu: sinh cau mang >= 10 tu roi cat. Cung ho voi xtts_v2. Ung vien k doi temperature/top_p/speed.",
+  "smoke": {
+   "date": "2026-10-10 20:02",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 20.27,
+   "gen_sec": 9.35,
+   "audio_sec": 11.97,
+   "peak_vram_mb": 1954.8,
+   "peak_commit_mb": 6591.3,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 0.781,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vi_0_c0",
+     "sec": 6.123,
+     "rms_db": -21.69,
+     "sane": true,
+     "sec_per_word": 0.292,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_vi_1_c0",
+     "sec": 5.845,
+     "rms_db": -22.16,
+     "sane": true,
+     "sec_per_word": 0.266,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_vixtts.log",
+   "cer": 0.056,
+   "cer_items": [
+    {
+     "job": "smoke_vi_0",
+     "cer": 0.058,
+     "hyp": "hôm nay trời mưa nhẹ nên chúng tôi quyết gích ở nhà độc sách và nấu một bữa cơm thật ngon"
+    },
+    {
+     "job": "smoke_vi_1",
+     "cer": 0.053,
+     "hyp": "cuộc họp sẽ bắt đầu lúc chín giờ sáng thứ hai mọi người nhớ mang theo báo cáo cuối tuần trước nha"
+    }
+   ],
+   "cer_asr": "nguyenvulebinh/wav2vec2-base-vietnamese-250h"
+  }
+ },
+ "xtts_v2": {
+  "kind": "tts",
+  "langs": [
+   "en"
+  ],
+  "family": "xtts",
+  "role": "train",
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "Coqui Public Model License 1.0.0 (phi thuong mai)",
+  "module": "xtts",
+  "opts": {
+   "model_dir": "D:/hf-cache/tts/tts/tts_models--multilingual--multi-dataset--xtts_v2",
+   "model_id": "coqui/XTTS-v2",
+   "gpt_cond_len": 12
+  },
+  "notes": "Dung cho tieng Anh thay viXTTS (card viXTTS: ngon ngu khac vi chua kiem). 17 ngon ngu.",
+  "smoke": {
+   "date": "2026-10-10 20:15",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 20.17,
+   "gen_sec": 7.35,
+   "audio_sec": 9.23,
+   "peak_vram_mb": 1930.0,
+   "peak_commit_mb": 6537.9,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 0.796,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_en_0_c0",
+     "sec": 4.267,
+     "rms_db": -17.65,
+     "sane": true,
+     "sec_per_word": 0.251,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_en_1_c0",
+     "sec": 4.96,
+     "rms_db": -18.38,
+     "sane": true,
+     "sec_per_word": 0.276,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_xtts_v2.log",
+   "cer": 0.0,
+   "cer_items": [
+    {
+     "job": "smoke_en_0",
+     "cer": 0.0,
+     "hyp": "THE MEETING WILL START AT NINE IN THE MORNING SO PLEASE BRING THE REPORT FROM LAST WEEK"
+    },
+    {
+     "job": "smoke_en_1",
+     "cer": 0.0,
+     "hyp": "WE WALKED ALONG THE RIVER FOR AN HOUR AND TALKED ABOUT THE NEW PROJECT UNTIL IT GOT DARK"
+    }
+   ],
+   "cer_asr": "facebook/wav2vec2-base-960h"
+  }
+ },
+ "f5_vi": {
+  "kind": "tts",
+  "langs": [
+   "vi"
+  ],
+  "family": "f5",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/f5/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "CC-BY-4.0 (zalopay/vietnamese-tts; ghi cong); ma F5-TTS MIT",
+  "module": "f5",
+  "opts": {
+   "model": "F5TTS_Base",
+   "model_id": "zalopay/vietnamese-tts@model_1290000",
+   "ckpt_file": "D:/va_gen/models/f5_vi_zalopay/model_1290000_ema.safetensors",
+   "vocab_file": "D:/va_gen/models/f5_vi_zalopay/vocab.txt",
+   "vocoder_local_path": "D:/va_gen/models/vocos-mel-24khz"
+  },
+  "notes": "F5TTS_Base (dim 1024, depth 22). Card: 200+ h giong Viet cong khai + YouTube. Checkpoint goc 5,4 GB -> rut EMA bang engines/f5.py --convert. ref <= 11,5 s, ref_text bat buoc.",
+  "smoke": {
+   "date": "2026-10-10 19:38",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 101.21,
+   "gen_sec": 11.02,
+   "audio_sec": 14.91,
+   "peak_vram_mb": 1991.2,
+   "peak_commit_mb": 5663.1,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 0.739,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vi_0_c0",
+     "sec": 7.104,
+     "rms_db": -21.55,
+     "sane": true,
+     "sec_per_word": 0.338,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_vi_1_c0",
+     "sec": 7.808,
+     "rms_db": -21.32,
+     "sane": true,
+     "sec_per_word": 0.355,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_f5_vi.log",
+   "cer": 0.062,
+   "cer_items": [
+    {
+     "job": "smoke_vi_0",
+     "cer": 0.072,
+     "hyp": "hôm nay trời mưa nhẹ nên chúng tôi quyết định ở nhà đọc sắc và nấu một bồ cầm thật ngon"
+    },
+    {
+     "job": "smoke_vi_1",
+     "cer": 0.053,
+     "hyp": "cuốc họp sẽ bắt đầu lúc chứng giờ sáng thứ hai mọi người nhớ mang theo báo cáo của tuần trước nhẻ"
+    }
+   ],
+   "cer_asr": "nguyenvulebinh/wav2vec2-base-vietnamese-250h"
+  }
+ },
+ "f5_en": {
+  "kind": "tts",
+  "langs": [
+   "en"
+  ],
+  "family": "f5",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/f5/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Ma MIT; trong so CC-BY-NC-4.0 (du lieu Emilia)",
+  "module": "f5",
+  "opts": {
+   "model": "F5TTS_v1_Base",
+   "model_id": "SWivid/F5-TTS F5TTS_v1_Base@1250000",
+   "ckpt_file": "D:/va_gen/models/f5_v1_base/model_1250000.safetensors",
+   "vocab_file": "D:/va_gen/models/f5_v1_base/vocab.txt",
+   "vocoder_local_path": "D:/va_gen/models/vocos-mel-24khz"
+  },
+  "notes": "Cung env f5 voi f5_vi (mot tien trinh chi nap mot trong hai).",
+  "smoke": {
+   "date": "2026-10-10 19:40",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 16.98,
+   "gen_sec": 11.54,
+   "audio_sec": 10.52,
+   "peak_vram_mb": 1990.2,
+   "peak_commit_mb": 5857.0,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 1.097,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_en_0_c0",
+     "sec": 5.259,
+     "rms_db": -25.25,
+     "sane": true,
+     "sec_per_word": 0.309,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_en_1_c0",
+     "sec": 5.259,
+     "rms_db": -23.27,
+     "sane": true,
+     "sec_per_word": 0.292,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_f5_en.log",
+   "cer": 0.0,
+   "cer_items": [
+    {
+     "job": "smoke_en_0",
+     "cer": 0.0,
+     "hyp": "THE MEETING WILL START AT NINE IN THE MORNING SO PLEASE BRING THE REPORT FROM LAST WEEK"
+    },
+    {
+     "job": "smoke_en_1",
+     "cer": 0.0,
+     "hyp": "WE WALKED ALONG THE RIVER FOR AN HOUR AND TALKED ABOUT THE NEW PROJECT UNTIL IT GOT DARK"
+    }
+   ],
+   "cer_asr": "facebook/wav2vec2-base-960h"
+  }
+ },
+ "vizipvoice": {
+  "kind": "tts",
+  "langs": [
+   "vi"
+  ],
+  "family": "zipvoice",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/zipvoice/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Apache-2.0 (contextboxai/ViZipvoice; ghi cong ZipVoice)",
+  "module": "zipvoice",
+  "opts": {
+   "variant": "vizipvoice",
+   "model_dir": "D:/va_gen/models/vizipvoice",
+   "checkpoint_name": "checkpoint-1860000.pt",
+   "vocoder_path": "D:/va_gen/models/vocos-mel-24khz",
+   "model_id": "contextboxai/ViZipvoice@checkpoint-1860000"
+  },
+  "notes": "123M flow-matching, tokenizer ky tu, ~6500 h vi. Ma nguon D:/va_gen/src/ViZipvoice @7c09abc. prompt_text bat buoc.",
+  "smoke": {
+   "date": "2026-10-10 19:40",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 17.8,
+   "gen_sec": 20.12,
+   "audio_sec": 12.75,
+   "peak_vram_mb": 1019.7,
+   "peak_commit_mb": 3844.9,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 1.578,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vi_0_c0",
+     "sec": 6.615,
+     "rms_db": -20.38,
+     "sane": true,
+     "sec_per_word": 0.315,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_vi_1_c0",
+     "sec": 6.137,
+     "rms_db": -19.66,
+     "sane": true,
+     "sec_per_word": 0.279,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_vizipvoice.log",
+   "cer": 0.013,
+   "cer_items": [
+    {
+     "job": "smoke_vi_0",
+     "cer": 0.014,
+     "hyp": "hôm nay trời mưa nhẹ nên chúng tôi quyết định ở nhà độc sách và nấu một bữa cơm thật ngon"
+    },
+    {
+     "job": "smoke_vi_1",
+     "cer": 0.013,
+     "hyp": "cuộc họp sẽ bắt đầu lúc chín giờ sáng thứ hai mọi người nhớ mang theo báo cáo của tuần trước nha"
+    }
+   ],
+   "cer_asr": "nguyenvulebinh/wav2vec2-base-vietnamese-250h"
+  }
+ },
+ "zipvoice_distill": {
+  "kind": "tts",
+  "langs": [
+   "en"
+  ],
+  "family": "zipvoice",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/zipvoice/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Ma Apache-2.0; card trong so khong ghi giay phep, hoc tu Emilia (CC-BY-NC) -> coi la phi thuong mai",
+  "module": "zipvoice",
+  "opts": {
+   "variant": "zipvoice_distill",
+   "model_dir": "D:/va_gen/models/zipvoice_distill",
+   "vocoder_path": "D:/va_gen/models/vocos-mel-24khz",
+   "model_id": "k2-fsa/ZipVoice zipvoice_distill"
+  },
+  "notes": "Ban chung cat (8 buoc). EmiliaTokenizer (piper_phonemize/espeak).",
+  "smoke": {
+   "date": "2026-10-12 16:51",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 22.77,
+   "gen_sec": 7.42,
+   "audio_sec": 10.62,
+   "peak_vram_mb": 686.3,
+   "peak_commit_mb": 2725.7,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 2,
+   "n_err": 0,
+   "commit": {
+    "ok": true,
+    "need_mb": 3216.1,
+    "free_mb": 3549.9,
+    "waited_sec": 0.0
+   },
+   "rtf": 0.699,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_en_0_c0",
+     "sec": 5.24,
+     "rms_db": -24.32,
+     "sane": true,
+     "sec_per_word": 0.308,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_en_1_c0",
+     "sec": 5.378,
+     "rms_db": -22.88,
+     "sane": true,
+     "sec_per_word": 0.299,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_zipvoice_distill.log",
+   "cer": 0.0,
+   "cer_items": [
+    {
+     "job": "smoke_en_0",
+     "cer": 0.0,
+     "hyp": "THE MEETING WILL START AT NINE IN THE MORNING SO PLEASE BRING THE REPORT FROM LAST WEEK"
+    },
+    {
+     "job": "smoke_en_1",
+     "cer": 0.0,
+     "hyp": "WE WALKED ALONG THE RIVER FOR AN HOUR AND TALKED ABOUT THE NEW PROJECT UNTIL IT GOT DARK"
+    }
+   ],
+   "cer_asr": "facebook/wav2vec2-base-960h"
+  }
+ },
+ "vieneu": {
+  "kind": "tts",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "vieneu",
+  "role": "heldout",
+  "env_python": "D:/va_gen/envs/vieneu/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Apache-2.0 (pnnbao-ump/VieNeu-TTS-v3-Turbo)",
+  "module": "vieneu",
+  "opts": {
+   "model_id": "pnnbao-ump/VieNeu-TTS-v3-Turbo"
+  },
+  "notes": "HELD-OUT: chi dung cho tap thu. 48 kHz, codec MOSS; kien truc khac XTTS/F5/ZipVoice. Khong cai [watermark], infer(apply_watermark=False) -> watermark=false.",
+  "smoke": {
+   "date": "2026-10-10 19:41",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 69.89,
+   "gen_sec": 31.75,
+   "audio_sec": 12.24,
+   "peak_vram_mb": 475.1,
+   "peak_commit_mb": 4399.8,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 2.594,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vi_0_c0",
+     "sec": 6.08,
+     "rms_db": -19.73,
+     "sane": true,
+     "sec_per_word": 0.29,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_vi_1_c0",
+     "sec": 6.16,
+     "rms_db": -19.9,
+     "sane": true,
+     "sec_per_word": 0.28,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_vieneu.log",
+   "cer": 0.013,
+   "cer_items": [
+    {
+     "job": "smoke_vi_0",
+     "cer": 0.014,
+     "hyp": "hôm nay trời mưa nhẹ nên chúng tôi quyết định ở nhà độc sách và nấu một bữa cơm thật ngon"
+    },
+    {
+     "job": "smoke_vi_1",
+     "cer": 0.013,
+     "hyp": "cuộc hợp sẽ bắt đầu lúc chín giờ sáng thứ hai mọi người nhớ mang theo báo cáo của tuần trước nhé"
+    }
+   ],
+   "cer_asr": "nguyenvulebinh/wav2vec2-base-vietnamese-250h"
+  }
+ },
+ "mms_vie": {
+  "kind": "tts",
+  "langs": [
+   "vi"
+  ],
+  "family": "vits",
+  "role": "train",
+  "needs_vc": true,
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "CC-BY-NC-4.0 (facebook/mms-tts-vie)",
+  "module": "mms",
+  "opts": {
+   "model_id": "facebook/mms-tts-vie"
+  },
+  "notes": "Bac giong may chat luong thap, mot giong co dinh, 16 kHz. Noi tiep VC de doi sang giong nguoi trong kho: uu tien seedvc (doi giong manh nhat, vi 0,92 vs 0,60); openvoice_v2 doi yeu -> loc theo resemblyzer.",
+  "smoke": {
+   "date": "2026-10-12 16:51",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 9.29,
+   "gen_sec": 2.48,
+   "audio_sec": 13.52,
+   "peak_vram_mb": 238.6,
+   "peak_commit_mb": 2565.1,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 2,
+   "n_err": 0,
+   "commit": {
+    "ok": true,
+    "need_mb": 3016.8,
+    "free_mb": 3570.1,
+    "waited_sec": 0.0
+   },
+   "rtf": 0.183,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vi_0_c0",
+     "sec": 6.208,
+     "rms_db": -18.85,
+     "sane": true,
+     "sec_per_word": 0.296,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_vi_1_c0",
+     "sec": 7.312,
+     "rms_db": -18.48,
+     "sane": true,
+     "sec_per_word": 0.332,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_mms_vie.log",
+   "cer": 0.061,
+   "cer_items": [
+    {
+     "job": "smoke_vi_0",
+     "cer": 0.043,
+     "hyp": "ôm nay trời mưa nhẹ nên chúng tôi quyết định ở nhà đọc sách và nấu một bữa cơm thật mon"
+    },
+    {
+     "job": "smoke_vi_1",
+     "cer": 0.08,
+     "hyp": "của họ sẽ bắt đầu lúc chín giờ sáng thứ hai mọi người nhớ mang theo báo cáo của tuần truốc nhé"
+    }
+   ],
+   "cer_asr": "nguyenvulebinh/wav2vec2-base-vietnamese-250h"
+  }
+ },
+ "kokoro": {
+  "kind": "tts",
+  "langs": [
+   "en"
+  ],
+  "family": "kokoro",
+  "role": "train",
+  "needs_vc": true,
+  "env_python": "D:/va_gen/envs/kokoro/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Apache-2.0 (hexgrad/Kokoro-82M)",
+  "module": "kokoro",
+  "opts": {},
+  "notes": "82M, giong co san (af_/am_/bf_/bm_). Khong nhai giong -> noi tiep VC.",
+  "smoke": {
+   "date": "2026-10-10 19:43",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 23.57,
+   "gen_sec": 37.59,
+   "audio_sec": 10.95,
+   "peak_vram_mb": 655.2,
+   "peak_commit_mb": 3457.0,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 3.433,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_en_0_c0",
+     "sec": 5.425,
+     "rms_db": -25.3,
+     "sane": true,
+     "sec_per_word": 0.319,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_en_1_c0",
+     "sec": 5.525,
+     "rms_db": -25.16,
+     "sane": true,
+     "sec_per_word": 0.307,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_kokoro.log",
+   "cer": 0.0,
+   "cer_items": [
+    {
+     "job": "smoke_en_0",
+     "cer": 0.0,
+     "hyp": "THE MEETING WILL START AT NINE IN THE MORNING SO PLEASE BRING THE REPORT FROM LAST WEEK"
+    },
+    {
+     "job": "smoke_en_1",
+     "cer": 0.0,
+     "hyp": "WE WALKED ALONG THE RIVER FOR AN HOUR AND TALKED ABOUT THE NEW PROJECT UNTIL IT GOT DARK"
+    }
+   ],
+   "cer_asr": "facebook/wav2vec2-base-960h"
+  }
+ },
+ "styletts2": {
+  "kind": "tts",
+  "langs": [
+   "en"
+  ],
+  "family": "styletts",
+  "role": "heldout",
+  "env_python": "D:/va_gen/envs/styletts2/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "Ma MIT; dieu khoan mo hinh LibriTTS: cong bo la giong tong hop / chi giong duoc phep khi cong bo",
+  "module": "styletts2",
+  "opts": {},
+  "notes": "HELD-OUT en (thay CosyVoice2: chi chay Linux). Goi pip styletts2 0.1.6, am vi gruut. Nhai qua vector phong cach tu ref.",
+  "smoke": {
+   "date": "2026-10-10 20:03",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 35.42,
+   "gen_sec": 28.31,
+   "audio_sec": 12.97,
+   "peak_vram_mb": 1231.1,
+   "peak_commit_mb": 4752.1,
+   "fatal": null,
+   "n_new": 2,
+   "n_err": 0,
+   "rtf": 2.183,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_en_0_c0",
+     "sec": 6.473,
+     "rms_db": -25.81,
+     "sane": true,
+     "sec_per_word": 0.381,
+     "rate_ok": true
+    },
+    {
+     "job": "smoke_en_1_c0",
+     "sec": 6.498,
+     "rms_db": -25.83,
+     "sane": true,
+     "sec_per_word": 0.361,
+     "rate_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_styletts2.log",
+   "cer": 0.0,
+   "cer_items": [
+    {
+     "job": "smoke_en_0",
+     "cer": 0.0,
+     "hyp": "THE MEETING WILL START AT NINE IN THE MORNING SO PLEASE BRING THE REPORT FROM LAST WEEK"
+    },
+    {
+     "job": "smoke_en_1",
+     "cer": 0.0,
+     "hyp": "WE WALKED ALONG THE RIVER FOR AN HOUR AND TALKED ABOUT THE NEW PROJECT UNTIL IT GOT DARK"
+    }
+   ],
+   "cer_asr": "facebook/wav2vec2-base-960h"
+  }
+ },
+ "openvoice_v2": {
+  "kind": "vc",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "openvoice",
+  "role": "train",
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "MIT (myshell-ai/OpenVoiceV2)",
+  "module": "coqui_vc",
+  "opts": {
+   "coqui_id": "voice_conversion_models/multilingual/multi-dataset/openvoice_v2",
+   "family": "openvoice"
+  },
+  "notes": "Bo doi mau giong (tone colour converter), khong phu thuoc ngon ngu. Ung vien k doi tau 0,3/0,5/0,15/0,7 + seed. Muc doi giong YEU nhat (vi: sim ra-dich 0,86 vs ra-nguon 0,65 voi cap nam-nu; voi cap nam-nam rat giong nhau 10/10 thi KHONG doi duoc: 0,871 < 0,881) -> WP7b nen loc dau ra theo resemblyzer sim(ra, dich) - sim(ra, nguon) (smoke.judge dung bien 0,05).",
+  "smoke": {
+   "date": "2026-10-11 09:34",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 30.81,
+   "gen_sec": 2.78,
+   "audio_sec": 35.93,
+   "peak_vram_mb": 583.2,
+   "peak_commit_mb": 3321.1,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 3,
+   "n_err": 0,
+   "rtf": 0.077,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vc_vi_c0",
+     "sec": 3.437,
+     "rms_db": -21.53,
+     "sane": true,
+     "src_sec": 3.437,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "sim_out_tgt": 0.856,
+     "sim_out_src": 0.645,
+     "sim_src_tgt": 0.597,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_en_c0",
+     "sec": 6.084,
+     "rms_db": -29.91,
+     "sane": true,
+     "src_sec": 6.095,
+     "len_ratio": 0.998,
+     "rate_ok": true,
+     "sim_out_tgt": 0.912,
+     "sim_out_src": 0.758,
+     "sim_src_tgt": 0.731,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_vi_long_c0",
+     "sec": 26.413,
+     "rms_db": -21.39,
+     "sane": true,
+     "src_sec": 26.42,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "sim_out_tgt": 0.877,
+     "sim_out_src": 0.677,
+     "sim_src_tgt": 0.626,
+     "conv_ok": true
+    }
+   ],
+   "conv_ok_by_lang": {
+    "vi": true,
+    "en": true
+   },
+   "log": "D:/va_gen/logs/smoke_openvoice_v2.log"
+  }
+ },
+ "freevc24": {
+  "kind": "vc",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "freevc",
+  "role": "train",
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "MIT",
+  "module": "coqui_vc",
+  "opts": {
+   "coqui_id": "voice_conversion_models/multilingual/vctk/freevc24",
+   "family": "freevc"
+  },
+  "notes": "WavLM-Large + VITS, 24 kHz; hoc tren VCTK (tieng Anh) -> voi tieng Viet co the meo thanh dieu. Doi giong vi vua phai (cap nam-nu 11/10: 0,83 vs 0,62; cap nam-nam 10/10 khong doi duoc: 0,773 < 0,799) -> WP7b loc theo resemblyzer. Lay mau z theo seed: k > 0 voi mot tham chieu chi khac nho (params.diversity=seed_only). Chung bo ma WavLM-Large voi knnvc (held-out).",
+  "smoke": {
+   "date": "2026-10-11 09:34",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 17.09,
+   "gen_sec": 2.37,
+   "audio_sec": 35.9,
+   "peak_vram_mb": 2567.6,
+   "peak_commit_mb": 5487.7,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 3,
+   "n_err": 0,
+   "rtf": 0.066,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vc_vi_c0",
+     "sec": 3.42,
+     "rms_db": -21.86,
+     "sane": true,
+     "src_sec": 3.437,
+     "len_ratio": 0.995,
+     "rate_ok": true,
+     "sim_out_tgt": 0.83,
+     "sim_out_src": 0.621,
+     "sim_src_tgt": 0.597,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_en_c0",
+     "sec": 6.08,
+     "rms_db": -28.62,
+     "sane": true,
+     "src_sec": 6.095,
+     "len_ratio": 0.998,
+     "rate_ok": true,
+     "sim_out_tgt": 0.863,
+     "sim_out_src": 0.757,
+     "sim_src_tgt": 0.731,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_vi_long_c0",
+     "sec": 26.4,
+     "rms_db": -23.12,
+     "sane": true,
+     "src_sec": 26.42,
+     "len_ratio": 0.999,
+     "rate_ok": true,
+     "sim_out_tgt": 0.841,
+     "sim_out_src": 0.652,
+     "sim_src_tgt": 0.626,
+     "conv_ok": true
+    }
+   ],
+   "conv_ok_by_lang": {
+    "vi": true,
+    "en": true
+   },
+   "log": "D:/va_gen/logs/smoke_freevc24.log"
+  }
+ },
+ "knnvc": {
+  "kind": "vc",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "knnvc",
+  "role": "heldout",
+  "env_python": ".venv/Scripts/python.exe",
+  "gpu_overlay": true,
+  "license": "MIT",
+  "module": "coqui_vc",
+  "opts": {
+   "coqui_id": "voice_conversion_models/multilingual/multi-dataset/knnvc",
+   "family": "knnvc"
+  },
+  "notes": "HELD-OUT. Can nhieu phut giong dich (target_ref_wav la danh sach tep, >= 5 phut tot nhat). Ung vien k doi topk 4/8/2 (tat dinh; k >= 3 lap lai -> params.diversity=duplicate_of_k*). LUU Y: chung bo ma noi dung WavLM-Large voi freevc24 (train) -> chi khac ho o phan giai ma (kNN + HiFi-GAN); held-out VC yeu ve bo ma hoa. Neu can held-out VC sach hon: doi vai seedvc <-> knnvc hoac them mot VC khong dung WavLM. Tep dich dai (WP7b dua MOT tep toi 300 s): VAD (trigger 7, nhu coqui) MOT lan tren ca tep (khong thay tieng -> giu nguyen tep), roi cat mieng <= 15 s, WavLM tung mieng KHONG VAD lai (12/10, code_rev 2; truoc do coqui chay ca tep mot lan -> attention O(T^2): tep > ~120-150 s het 6 GB VRAM; ban giua 12/10 VAD tung mieng thi mieng im ra rong -> RuntimeError tren 20/240 viec WP7b (jobs truoc 18:00) / 11/165 (jobs 18:00, 7 tep AMI); ban moi: 0 tep hong, -0,12 % khung so voi coqui ca tep) + bo nho dem tap so khop theo tep dich; params ghi n_target_pieces, matching_frames, matching_set_cached, target_vad (both/front/none moi tep dich).",
+  "smoke": {
+   "date": "2026-10-11 09:36",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 14.73,
+   "gen_sec": 1.44,
+   "audio_sec": 35.9,
+   "peak_vram_mb": 2422.8,
+   "peak_commit_mb": 5666.8,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 3,
+   "n_err": 0,
+   "rtf": 0.04,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vc_vi_c0",
+     "sec": 3.42,
+     "rms_db": -22.7,
+     "sane": true,
+     "src_sec": 3.437,
+     "len_ratio": 0.995,
+     "rate_ok": true,
+     "sim_out_tgt": 0.888,
+     "sim_out_src": 0.613,
+     "sim_src_tgt": 0.597,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_en_c0",
+     "sec": 6.08,
+     "rms_db": -30.47,
+     "sane": true,
+     "src_sec": 6.095,
+     "len_ratio": 0.998,
+     "rate_ok": true,
+     "sim_out_tgt": 0.915,
+     "sim_out_src": 0.697,
+     "sim_src_tgt": 0.731,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_vi_long_c0",
+     "sec": 26.4,
+     "rms_db": -23.36,
+     "sane": true,
+     "src_sec": 26.42,
+     "len_ratio": 0.999,
+     "rate_ok": true,
+     "sim_out_tgt": 0.917,
+     "sim_out_src": 0.622,
+     "sim_src_tgt": 0.626,
+     "conv_ok": true
+    }
+   ],
+   "conv_ok_by_lang": {
+    "vi": true,
+    "en": true
+   },
+   "log": "D:/va_gen/logs/smoke_knnvc.log",
+   "recheck": "12/10: smoke nay do voi ma cu (code_rev 1); ma hien tai code_rev 2 (VAD ca tep + WavLM theo mieng) -> run_engine tu choi knnvc (ma thoat 1 'smoke cu') toi khi chay lai: smoke run --engine knnvc (viec smoke_vc_vi_longref 129,5 s VIVOS + smoke_vc_en_amilong 224 s AMI). Duong moi da kiem tren CPU voi get_features + VAD that cua coqui, WavLM gia; CHUA tren mo hinh that (can ~6,5 GB commit ranh)."
+  }
+ },
+ "seedvc": {
+  "kind": "vc",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "seedvc",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/seedvc/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "GPL-3.0 (repo Plachtaa/seed-vc da luu tru tu 2025-11-21)",
+  "module": "seedvc",
+  "opts": {},
+  "notes": "DiT whisper-small 22,05 kHz (khong dung mo hinh f0/hat). Cua so DiT 30 s chung cho THAM CHIEU + NGUON: adapter (11/10) cat tham chieu con min(25 s, 30 - nguon - le) nhung >= 5 s -> nguon <= ~24,8 s di MOT lan; nguon dai hon chia doan + crossfade 16 khung (params.n_chunks > 1, co moi noi ~0,19 s). Khong con gioi han do dai nguon (smoke: nguon 26,4 s -> 2 doan, ok). BigVGAN giai ma theo mieng 5 s. Ma nguon D:/va_gen/src/seed-vc @51383ef; trong so tai ve D:/va_gen/src/seed-vc/checkpoints.",
+  "smoke": {
+   "date": "2026-10-11 09:32",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 18.54,
+   "gen_sec": 20.96,
+   "audio_sec": 35.93,
+   "peak_vram_mb": 1534.5,
+   "peak_commit_mb": 5494.9,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 3,
+   "n_err": 0,
+   "rtf": 0.583,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_vc_vi_c0",
+     "sec": 3.437,
+     "rms_db": -20.48,
+     "sane": true,
+     "src_sec": 3.437,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "sim_out_tgt": 0.922,
+     "sim_out_src": 0.603,
+     "sim_src_tgt": 0.597,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_en_c0",
+     "sec": 6.084,
+     "rms_db": -25.02,
+     "sane": true,
+     "src_sec": 6.095,
+     "len_ratio": 0.998,
+     "rate_ok": true,
+     "sim_out_tgt": 0.935,
+     "sim_out_src": 0.742,
+     "sim_src_tgt": 0.731,
+     "conv_ok": true
+    },
+    {
+     "job": "smoke_vc_vi_long_c0",
+     "sec": 26.413,
+     "rms_db": -19.3,
+     "sane": true,
+     "src_sec": 26.42,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "sim_out_tgt": 0.933,
+     "sim_out_src": 0.68,
+     "sim_src_tgt": 0.626,
+     "conv_ok": true
+    }
+   ],
+   "conv_ok_by_lang": {
+    "vi": true,
+    "en": true
+   },
+   "log": "D:/va_gen/logs/smoke_seedvc.log"
+  }
+ },
+ "dfn": {
+  "kind": "denoise_ai",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "deepfilternet",
+  "role": "train",
+  "env_python": "D:/va_gen/envs/dfn/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "MIT / Apache-2.0 (DeepFilterNet3)",
+  "module": "dfn",
+  "opts": {},
+  "notes": "Khu on AI cho thao tac 02 (khu on ca tep / doan). Dau ra o sr cua nguon. Luu y quyet dinh 4: khu on mac dinh cua ung dung goi (Zoom/Meet/Zalo/WebRTC) la nhan 01 — may nay mo phong khu on CHU DONG (02).",
+  "smoke": {
+   "date": "2026-10-11 09:36",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 3.44,
+   "gen_sec": 2.47,
+   "audio_sec": 12.75,
+   "peak_vram_mb": 51.6,
+   "peak_commit_mb": 1569.7,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 4,
+   "n_err": 0,
+   "rtf": 0.194,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_dn_vi_c0",
+     "sec": 3.188,
+     "rms_db": -24.75,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 15.99,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c1",
+     "sec": 3.188,
+     "rms_db": -24.68,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 15.18,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c2",
+     "sec": 3.188,
+     "rms_db": -24.6,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 18.7,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c3",
+     "sec": 3.188,
+     "rms_db": -24.72,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 12.51,
+     "dn_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_dfn.log"
+  }
+ },
+ "resenh": {
+  "kind": "denoise_ai",
+  "langs": [
+   "vi",
+   "en"
+  ],
+  "family": "resemble_enhance",
+  "role": "heldout",
+  "env_python": "D:/va_gen/envs/resenh/Scripts/python.exe",
+  "gpu_overlay": false,
+  "license": "MIT (ma + trong so ResembleAI/resemble-enhance)",
+  "module": "resenh",
+  "opts": {
+   "run_dir": "D:/va_gen/models/resemble_enhance/enhancer_stage2"
+  },
+  "notes": "HELD-OUT khu on AI ho khac DeepFilterNet (UNet denoiser + bo lam dep CFM 44,1 kHz). Ung vien k: enhance lambd 0.9 / chi denoise / enhance lambd 0.5 / enhance nfe 64. Che do enhance co the doi am sac (sinh lai dai cao) -> dung cho tap thu 02 may la, KHONG dung sinh du lieu hoc. Enhance tai tao PHA: adapter bu lech thoi gian (lag con lai so voi ban sach = 0 mau, do 11/10) nhung xcorr voi ban sach chi ~0,26-0,30 -> params.waveform_aligned=false: chi dung cho 02 CA TEP (hoac noi doan co crossfade); 'denoise' (k=1) giu pha, xcorr 0,993. Quyet dinh 4: khu on mac dinh ung dung goi = 01; may nay mo phong khu on CHU DONG (02).",
+  "smoke": {
+   "date": "2026-10-11 09:36",
+   "device_req": "auto",
+   "rc": 0,
+   "device": "cuda",
+   "load_sec": 14.55,
+   "gen_sec": 6.21,
+   "audio_sec": 12.75,
+   "peak_vram_mb": 2176.4,
+   "peak_commit_mb": 5603.5,
+   "fatal": null,
+   "load_error": null,
+   "n_new": 4,
+   "n_err": 0,
+   "rtf": 0.487,
+   "ok": true,
+   "checks": [
+    {
+     "job": "smoke_dn_vi_c0",
+     "sec": 3.188,
+     "rms_db": -23.78,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 17.68,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c1",
+     "sec": 3.188,
+     "rms_db": -24.26,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 17.19,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c2",
+     "sec": 3.188,
+     "rms_db": -24.03,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 17.32,
+     "dn_ok": true
+    },
+    {
+     "job": "smoke_dn_vi_c3",
+     "sec": 3.188,
+     "rms_db": -23.41,
+     "sane": true,
+     "src_sec": 3.188,
+     "len_ratio": 1.0,
+     "rate_ok": true,
+     "lsd_in": 29.0,
+     "lsd_out": 18.52,
+     "dn_ok": true
+    }
+   ],
+   "log": "D:/va_gen/logs/smoke_resenh.log"
+  }
+ },
+ "_excluded": {
+  "hynt/F5-TTS-Vietnamese-ViVoice": "card cam nhai giong khi chua dong y (quyet dinh 2)",
+  "EraX-Smile-UnixSex-F5": "mo hinh gated (can tai khoan / dong y dieu khoan) - khong dung",
+  "Viterbox (Chatterbox-multilingual vi)": "khong vua GPU 6 GB",
+  "VoxCPM2 (2B)": "khong vua GPU 6 GB",
+  "CosyVoice2-0.5B / VietTTS (CosyVoice)": "tuy chon held-out; CHUA lam (chon StyleTTS2 lam held-out en; vieneu held-out vi)",
+  "Piper vi, Vira-TTS, OmniVoice, Qwen3-TTS-0.6B, Chatterbox, Tortoise-v2": "tuy chon trong audit1_tts; CHUA lam",
+  "RVC v2": "can fine-tune rieng tung nguoi dich (nang) - CHUA lam",
+  "F5-TTS speech_edit, VoiceCraft, PlayDiffusion": "may SUA LOI NOI (dien vao giua ban ghi); I3 chua co kind 'edit' - ung vien buoc sau cho nhan 03 kho (khong co moi ghep ro)",
+  "SSR-Speech": "audit1_tts khong khuyen dung"
+ }
+}

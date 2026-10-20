@@ -1,0 +1,24 @@
+# Kho git VoiceAudit: CHI tai lieu + ma + cau hinh van ban. Du lieu, mo hinh, dac trung, ket qua di theo goi du lieu rieng.
+.venv/
+__pycache__/
+*.pyc
+.omc/
+.hf_cache/
+.cache/
+data/
+data_labels/
+models/
+.tmp_research/
+.tmp_v6/
+experts/**/weights/
+*.wav
+*.npy
+*.npz
+*.pkl
+*.pt
+*.joblib
+*.onnx
+*.safetensors
+*.parquet
+*.jsonl
+GOI_*.json

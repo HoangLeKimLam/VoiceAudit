@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tóm tắt VoiceAudit</title>
+<style>
+/* Layout: một cột đọc 1080px, mỗi phần một hình chính; nhãn 01–04 mang màu ngữ nghĩa xuyên suốt trang (cùng hệ màu VoiceAudit.html). Chỉ dùng nền trắng. */
+:root{
+  color-scheme:light;
+  --ground:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F6F8;
+  --ink:#0E151B; --ink-2:#4B5966; --ink-3:#77848F;
+  --rule:#CBD4DC; --rule-2:#E2E8ED;
+  --accent:#A76508; --accent-soft:#F6E8CE;
+  --verify:#0E6B62; --verify-soft:#DCEDEA;
+  --block:#93321F; --block-soft:#F6DED8;
+  --l04:#5E6B76; --l04-soft:#E4E9ED;
+  --wave:#8F9BA6;
+  --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --r:6px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:clamp(16px,4vw,32px)}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.2}
+p{margin:0}
+b{font-weight:650}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- nhãn và chip ---------- */
+.lb{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.7rem;font-weight:700;
+  letter-spacing:.06em;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.lb.l01{color:var(--verify);background:var(--verify-soft)}
+.lb.l02{color:var(--accent);background:var(--accent-soft)}
+.lb.l03{color:var(--block);background:var(--block-soft)}
+.lb.l04{color:var(--l04);background:var(--l04-soft)}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.src{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;color:var(--ink-3);white-space:nowrap}
+
+/* ---------- đầu trang ---------- */
+header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
+header.top .wrap{padding-block:36px 28px;display:grid;gap:22px}
+.top h1{font-size:clamp(1.7rem,1.2rem + 2.2vw,2.6rem);font-weight:700;letter-spacing:-.01em}
+.top h1 span{color:var(--ink-3);font-weight:500}
+.thesis{font-size:1.05rem;color:var(--ink-2);max-width:68ch}
+.thesis b{color:var(--ink)}
+.verdicts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.vd{padding:12px 14px;border-right:1px solid var(--rule-2);min-width:0;display:grid;gap:2px;align-content:start}
+.vd:last-child{border-right:0}
+.vd .code{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.12em}
+.vd .name{font-weight:650}
+.vd .what{font-size:.82rem;color:var(--ink-2);line-height:1.4}
+.vd.l01{background:var(--verify-soft)} .vd.l01 .code{color:var(--verify)}
+.vd.l02{background:var(--accent-soft)} .vd.l02 .code{color:var(--accent)}
+.vd.l03{background:var(--block-soft)} .vd.l03 .code{color:var(--block)}
+.vd.l04{background:var(--l04-soft)} .vd.l04 .code{color:var(--l04)}
+
+/* chuỗi tư duy (AI201-5 trang 19) */
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;counter-reset:st}
+.chain a{position:relative;display:grid;gap:3px;padding:10px 18px 10px 14px;text-decoration:none;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--rule);margin-right:-1px;min-width:0}
+.chain a:first-child{border-radius:var(--r) 0 0 var(--r)}
+.chain a:last-child{border-radius:0 var(--r) var(--r) 0}
+.chain a::after{content:"";position:absolute;right:-7px;top:50%;width:12px;height:12px;background:inherit;
+  border-top:1px solid var(--rule);border-right:1px solid var(--rule);transform:translateY(-50%) rotate(45deg);z-index:1}
+.chain a:last-child::after{display:none}
+.chain a:hover,.chain a:focus-visible{background:var(--surface);outline:none}
+.chain a:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+.chain .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-3)}
+.chain .t{font-weight:650;font-size:.92rem}
+.chain .d{font-size:.78rem;color:var(--ink-2);line-height:1.35}
+.chain a.ag{background:var(--accent-soft)}
+.chain a.ag .k{color:var(--accent)}
+
+/* thanh mục lục */
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--rule)}
+nav.toc .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.toc a{flex:0 0 auto;font-size:.8rem;color:var(--ink-2);text-decoration:none;padding:5px 10px;border-radius:4px;white-space:nowrap}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--surface);color:var(--ink);outline:none}
+nav.toc a:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+nav.toc a b{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-right:5px;font-weight:600}
+
+/* ---------- phần ---------- */
+section.part{padding-block:44px 8px}
+.ph{display:grid;gap:8px;margin-bottom:22px;max-width:76ch}
+.ph h2{font-size:clamp(1.35rem,1.1rem + 1vw,1.75rem);font-weight:700}
+.ph h2 em{font-style:normal;font-family:var(--mono);font-size:.62em;color:var(--ink-3);margin-right:10px;vertical-align:.2em;letter-spacing:.06em}
+.ph p{color:var(--ink-2)}
+.theory{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;border-radius:0 var(--r) var(--r) 0;
+  font-size:.9rem;color:var(--ink-2);max-width:76ch}
+.theory b{color:var(--ink)}
+.theory .src{margin-left:6px}
+.block{margin-top:26px;display:grid;gap:12px}
+.block>h3{font-size:1.02rem;font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.block>p{color:var(--ink-2);max-width:76ch}
+.basis{font-size:.86rem;color:var(--ink-2);background:var(--verify-soft);border-radius:var(--r);padding:9px 12px;max-width:80ch}
+.basis b:first-child{color:var(--verify);font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;margin-right:6px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r)}
+.scroll{overflow-x:auto}
+
+/* sáu mục */
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.5fr);align-items:stretch;gap:0}
+.io>div{padding:16px 18px;min-width:0}
+.io .arrow{display:flex;align-items:center;padding:0 6px;color:var(--ink-3);font-family:var(--mono)}
+.io h4,.six h4{margin:0 0 6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.io ul,.six ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:.9rem}
+.io .in{border-right:1px solid var(--rule-2)}
+.six{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.six>div{padding:14px 16px;min-width:0}
+.six .lead{font-size:.9rem;color:var(--ink-2);margin-bottom:6px}
+
+/* ví dụ hồ sơ */
+.dossier{display:grid;gap:12px;padding:16px}
+.dossier .head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.9rem}
+svg.wave{width:100%;height:auto;display:block}
+.oprows{display:grid;gap:8px}
+.oprow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;font-size:.88rem;
+  padding:8px 10px;border-radius:4px;background:var(--surface-2)}
+.oprow .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.oprow .why{color:var(--ink-2);font-size:.84rem}
+.sev{font-family:var(--mono);font-size:.72rem}
+
+/* luật nhãn */
+.rule{display:grid;gap:0;counter-reset:r}
+.rule li{list-style:none;display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:center;
+  padding:9px 12px;border-bottom:1px solid var(--rule-2);font-size:.9rem}
+.rule li:last-child{border-bottom:0}
+.rule li::before{counter-increment:r;content:counter(r);font-family:var(--mono);font-size:.75rem;color:var(--ink-3);
+  width:24px;height:24px;border:1px solid var(--rule);border-radius:50%;display:grid;place-items:center}
+ol.rule{margin:0;padding:0}
+
+/* 8 thao tác */
+.ops{display:grid;gap:10px}
+.opsrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.op{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:12px;display:grid;gap:7px;
+  align-content:start;min-width:0}
+.op .nm{font-weight:700;font-size:.92rem;line-height:1.25}
+.op .tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.op .ex{font-size:.82rem;color:var(--ink-2);line-height:1.4}
+.op .tr{font-size:.8rem;line-height:1.4;border-top:1px dashed var(--rule);padding-top:6px;color:var(--ink-2)}
+.op .tr b{color:var(--ink);font-weight:600}
+.strip{width:100%;height:16px;display:block}
+.rowlabel{display:flex;gap:10px;align-items:baseline;font-size:.86rem;color:var(--ink-2)}
+.notcount{font-size:.86rem;color:var(--ink-2)}
+
+/* cây phân rã: chia từ trên xuống */
+.lv{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.82rem;color:var(--ink-2);margin-bottom:14px}
+.legend b{color:var(--ink)}
+.root{position:relative;max-width:820px;margin:0 auto;padding:14px 16px;display:grid;gap:10px;border:1.5px solid var(--ink-2)}
+.root::after{content:"";position:absolute;left:50%;bottom:-24px;width:2px;height:24px;margin-left:-1px;background:var(--rule)}
+.root .rio{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.4fr);gap:10px;align-items:stretch}
+.root .rio>div{background:var(--surface-2);border-radius:4px;padding:9px 11px;font-size:.86rem;min-width:0}
+.root .rio>div b{display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-3);font-weight:600;margin-bottom:2px}
+.root .rio .mid{background:none;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:.7rem;color:var(--accent);padding:0 4px}
+.root .q0{font-size:.92rem}
+.branches{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px;padding-top:24px}
+.branches::before{content:"";position:absolute;top:0;left:calc((100% - 28px)/6);right:calc((100% - 28px)/6);height:2px;background:var(--rule)}
+.br{position:relative;display:grid;gap:10px;align-content:start;min-width:0}
+.br::before{content:"";position:absolute;top:-24px;left:50%;width:2px;height:24px;margin-left:-1px;background:var(--rule)}
+.p1{background:var(--accent-soft);border-radius:var(--r);padding:11px 13px;display:grid;gap:4px}
+.p1 .lv{color:var(--accent)}
+.p1>b{font-size:.98rem;line-height:1.3}
+.p1 .nm{font-size:.78rem;color:var(--ink-2)}
+.io2{font-family:var(--mono);font-size:.7rem;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:3px 6px;align-items:center}
+.io2 span{display:inline-block;min-width:20px;text-align:center;padding:0 4px;border-radius:9px;border:1px solid var(--rule);color:var(--ink);background:var(--surface)}
+.io2 em{font-style:normal;color:var(--ink-3)}
+.kids{display:grid;gap:10px;margin-left:12px;padding-left:14px;border-left:2px solid var(--rule)}
+.kids .kh{position:relative}
+.kids .kh::before{content:"";position:absolute;left:-16px;top:22px;width:14px;height:2px;background:var(--rule)}
+.synth{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.synth>div{padding:12px 14px;border-right:1px solid var(--rule-2);display:grid;gap:4px;align-content:start;min-width:0}
+.synth>div:last-child{border-right:0}
+.synth i{font-style:normal;font-family:var(--mono);font-size:.66rem;color:var(--verify);letter-spacing:.08em}
+.synth b{font-size:.88rem}
+.synth span{font-size:.8rem;color:var(--ink-2);line-height:1.4}
+.crit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.crit>div{padding:11px 14px;display:grid;gap:3px;min-width:0}
+.crit b{font-size:.88rem}
+.crit span{font-size:.82rem;color:var(--ink-2)}
+.kh{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:11px 12px;display:grid;gap:6px;min-width:0}
+.kh.open{border-style:dashed;background:var(--surface-2)}
+.kh .ttl{display:flex;gap:8px;align-items:baseline}
+.kh .ttl i{font-style:normal;font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.kh .ttl b{font-size:.92rem;line-height:1.25}
+.kh .q{font-size:.8rem;color:var(--ink-2);font-style:italic}
+.kh ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px}
+.kh li{font-size:.74rem;padding:2px 6px;border:1px solid var(--rule-2);border-radius:3px;background:var(--surface-2);color:var(--ink-2)}
+.kh .out{font-family:var(--mono);font-size:.7rem;color:var(--ink-3)}
+.kh .out span{display:inline-block;min-width:20px;text-align:center;padding:0 4px;border-radius:9px;border:1px solid var(--rule);margin-right:3px;color:var(--ink-2)}
+.flow{display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center;padding:12px 14px;font-size:.78rem}
+.flow span{display:inline-flex;gap:4px;align-items:center;white-space:nowrap;color:var(--ink-2)}
+.flow span i{font-style:normal;font-family:var(--mono);font-size:.7rem;border:1px solid var(--rule);border-radius:9px;padding:0 5px;color:var(--ink)}
+.flow .sep{color:var(--ink-3)}
+
+/* trừu tượng hóa */
+.qs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.qs>div{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:10px;display:grid;gap:3px;align-content:start;min-width:0}
+.qs b{font-size:.86rem;line-height:1.25}
+.qs span{font-size:.78rem;color:var(--ink-2);line-height:1.35}
+.qs i{font-style:normal;font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+.sort{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bin{border-radius:var(--r);padding:12px;display:grid;gap:8px;align-content:start;min-width:0;border:1px solid var(--rule)}
+.bin h4{margin:0;font-size:.86rem;display:grid;gap:2px}
+.bin h4 small{font-weight:400;font-size:.76rem;color:var(--ink-2)}
+.bin.keep{background:var(--verify-soft);border-color:transparent}
+.bin.keep h4{color:var(--verify)}
+.bin.coarse{background:var(--accent-soft);border-color:transparent}
+.bin.coarse h4{color:var(--accent)}
+.bin.cond{background:var(--l04-soft);border-color:transparent}
+.bin.cond h4{color:var(--l04)}
+.bin.drop{background:var(--surface);border-style:dashed}
+.bin.drop h4{color:var(--block)}
+.item{background:var(--surface);border-radius:4px;padding:7px 9px;font-size:.82rem;line-height:1.35;display:grid;gap:2px}
+.bin.drop .item{background:var(--surface-2)}
+.item b{font-size:.84rem}
+.item span{color:var(--ink-2)}
+.ladder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0}
+.ladder>div{padding:10px 12px;border-right:1px solid var(--rule-2);min-width:0;display:grid;gap:3px;align-content:start}
+.ladder>div:last-child{border-right:0}
+.ladder i{font-style:normal;font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+.ladder b{font-size:.86rem}
+.ladder span{font-size:.76rem;color:var(--ink-2);line-height:1.35}
+.ladder span.cut{color:var(--block)}
+
+/* bảng */
+table.t{width:100%;border-collapse:collapse;font-size:.86rem;min-width:620px}
+table.t th{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:600;padding:9px 12px;border-bottom:1px solid var(--rule)}
+table.t td{padding:9px 12px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+table.t td:first-child{font-weight:600}
+table.t td.mut{color:var(--ink-2)}
+table.t td .arrow{color:var(--ink-3);font-family:var(--mono)}
+
+/* tổng quát hóa */
+.gen{display:grid;grid-template-columns:minmax(0,.9fr) auto minmax(0,1.6fr) auto minmax(0,1.3fr);gap:10px;align-items:center}
+.gen .ar{font-family:var(--mono);color:var(--ink-3);text-align:center}
+.five{display:grid;gap:6px}
+.five div{padding:7px 10px;border-radius:4px;font-size:.86rem;font-weight:600;display:flex;justify-content:space-between;gap:8px;background:var(--surface)}
+.matrix{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:4px;font-size:.82rem}
+.matrix .hd{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:4px 6px;align-self:end}
+.matrix .rh{padding:8px;font-size:.78rem;font-weight:650;display:grid;gap:2px;align-content:center;border-radius:4px}
+.matrix .rh small{font-weight:400;color:var(--ink-2)}
+.matrix .c{padding:8px;border-radius:4px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start}
+.matrix .c span{background:var(--surface);border-radius:3px;padding:2px 6px;font-size:.78rem}
+.matrix .r02{background:var(--accent-soft)}
+.matrix .r02.rh{color:var(--accent)}
+.matrix .r03{background:var(--block-soft)}
+.matrix .r03.rh{color:var(--block)}
+.one{display:grid;gap:6px}
+.one div{padding:8px 10px;border:1px solid var(--rule);border-radius:4px;background:var(--surface);font-size:.82rem;display:grid;gap:1px}
+.one div b{font-size:.84rem}
+.one div span{color:var(--ink-2);font-size:.78rem}
+.pipe{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:.8rem}
+.pipe span{padding:3px 8px;border-radius:4px;background:var(--surface-2);border:1px solid var(--rule-2)}
+.pipe span.v{background:var(--verify-soft);border-color:transparent;color:var(--verify);font-weight:600}
+.pipe .ar{color:var(--ink-3);font-family:var(--mono)}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.steps>div{padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0}
+.steps i{font-style:normal;font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.06em}
+.steps b{font-size:.9rem}
+.steps p{font-size:.84rem;color:var(--ink-2)}
+.steps .cs{font-size:.78rem;color:var(--verify);border-top:1px dashed var(--rule);padding-top:6px}
+.cls{padding:14px 16px;display:grid;gap:10px}
+.cls .def{font-size:1rem;font-weight:600;max-width:72ch}
+.cls .name{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.fv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fv>div{padding:12px 14px;min-width:0}
+.fv h4{margin:0 0 6px;font-size:.84rem}
+.fv .f h4{color:var(--verify)} .fv .v h4{color:var(--accent)}
+.fv ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:.86rem}
+.nogroup{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.nogroup>div{padding:10px 12px;display:grid;gap:4px;align-content:start;min-width:0}
+.nogroup b{font-size:.84rem;line-height:1.3}
+.nogroup span{font-size:.78rem;color:var(--ink-2);line-height:1.35}
+
+/* kết */
+.close{margin-top:40px;background:var(--surface-2);border-top:1px solid var(--rule)}
+.close .wrap{padding-block:30px 40px;display:grid;gap:16px}
+.close ol{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:c}
+.close li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;font-size:.92rem;padding-bottom:8px;border-bottom:1px solid var(--rule-2)}
+.close li b{font-weight:700}
+.close li span{color:var(--ink-2)}
+.quote{font-size:1.15rem;font-weight:600;max-width:60ch}
+.quote small{display:block;font-weight:400;font-size:.78rem;color:var(--ink-3);margin-top:4px;font-family:var(--mono)}
+.foot{font-size:.78rem;color:var(--ink-3)}
+
+/* ---------- màn hình hẹp ---------- */
+/* phan ra: so do cay 4 tang + giai thich tung nhanh */
+.pt{display:grid;grid-template-columns:64px repeat(9,minmax(0,1fr));gap:16px 8px;min-width:980px;padding:4px 2px 8px}
+.pt .tl{font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase;line-height:1.35;padding-top:4px}
+.pt .tl b{display:block;color:var(--ink);font-size:.7rem;letter-spacing:.06em}
+.pt .n0{border:1.5px solid var(--ink);border-radius:var(--r);padding:10px 14px;background:var(--surface);display:grid;gap:3px;text-align:center}
+.pt .n0 b{font-size:1.02rem}
+.pt .n0 span{font-size:.8rem;color:var(--ink-2)}
+.pt .n1,.pt .n2,.pt .n3{position:relative;min-width:0}
+.pt .n1::before,.pt .n2::before,.pt .n3::before{content:"";position:absolute;left:50%;top:-16px;width:2px;height:16px;margin-left:-1px;background:var(--rule)}
+.pt .n1{display:grid;gap:3px;align-content:start;background:var(--accent-soft);border-radius:var(--r);padding:8px 9px;text-decoration:none;color:var(--ink)}
+.pt .n1:hover,.pt .n1:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pt .n1 i{font-style:normal;font-family:var(--mono);font-size:.64rem;color:var(--accent);font-weight:700}
+.pt .n1 b{font-size:.82rem;line-height:1.25}
+.pt .n1 small{font-size:.68rem;color:var(--ink-2);line-height:1.3}
+.pt .n1.frame{background:var(--surface-2);border:1.5px dashed var(--rule)}
+.pt .n2{border:1px solid var(--rule);border-radius:var(--r);padding:7px 8px;background:var(--surface);font-size:.73rem;line-height:1.3;display:grid;gap:4px;align-content:start}
+.pt .n3{display:flex;flex-direction:column;gap:3px}
+.pt .n3 span{font-size:.67rem;padding:2px 5px;border:1px solid var(--rule-2);border-radius:3px;background:var(--surface-2);color:var(--ink-2);line-height:1.25}
+.pd{margin-top:16px;display:grid;gap:10px;scroll-margin-top:64px}
+.pd-1{background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;display:grid;gap:8px}
+.pd-1.frame{background:var(--surface-2);border:1.5px dashed var(--rule)}
+.pd-h{display:flex;gap:6px 12px;align-items:baseline;flex-wrap:wrap}
+.pd-h b{font-size:1.04rem}
+.pd-tier{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
+.pd-1 .pd-tier{color:var(--accent);font-weight:700}
+.pd-why{font-size:.88rem}
+.pd-io{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pd-io>div{background:var(--surface);border-radius:4px;padding:7px 9px;font-size:.8rem;color:var(--ink-2);min-width:0}
+.pd-io>div>b{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--ink-3);margin-bottom:2px}
+.pd-io a,.pd-why a{color:var(--accent)}
+.pd-req{font-size:.76rem;color:var(--ink-2)}
+.pd-kids{margin-left:18px;padding-left:16px;border-left:2px solid var(--rule);display:grid;gap:10px}
+.pd-2{position:relative;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:9px 12px;display:grid;gap:8px}
+.pd-2::before{content:"";position:absolute;left:-18px;top:20px;width:17px;height:2px;background:var(--rule)}
+.pd-2 .q{font-size:.9rem;font-weight:600}
+.pd-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:6px}
+.pd-3>div{border:1px solid var(--rule-2);border-radius:4px;background:var(--surface-2);padding:6px 9px;font-size:.78rem;color:var(--ink-2);line-height:1.38}
+.pd-3>div b{display:block;color:var(--ink);font-size:.8rem}
+.trip{display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center;padding:12px 14px;font-size:.8rem}
+.trip span{display:inline-flex;gap:5px;align-items:center;color:var(--ink-2)}
+.trip span i{font-style:normal;font-family:var(--mono);font-size:.68rem;border:1px solid var(--rule);border-radius:9px;padding:0 6px;color:var(--ink);background:var(--surface-2)}
+.trip .sep{color:var(--ink-3)}
+@media (max-width:900px){
+  .chain{grid-template-columns:minmax(0,1fr)}
+  .chain a{margin-right:0;margin-bottom:-1px;border-radius:0!important}
+  .chain a:first-child{border-radius:var(--r) var(--r) 0 0!important}
+  .chain a:last-child{border-radius:0 0 var(--r) var(--r)!important}
+  .chain a::after{right:auto;left:22px;top:auto;bottom:-7px;transform:rotate(135deg)}
+  .opsrow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .branches{grid-template-columns:minmax(0,1fr);gap:22px}
+  .branches::before{display:none}
+    .synth{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .synth>div{border-bottom:1px solid var(--rule-2)}
+  .qs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sort{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ladder{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ladder>div{border-bottom:1px solid var(--rule-2)}
+  .gen{grid-template-columns:minmax(0,1fr)}
+  .gen .ar{transform:rotate(90deg)}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nogroup{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .pd-io{grid-template-columns:minmax(0,1fr)}
+  .pd-kids{margin-left:6px;padding-left:12px}
+}
+@media (max-width:620px){
+  .verdicts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vd:nth-child(2){border-right:0}
+  .vd:nth-child(-n+2){border-bottom:1px solid var(--rule-2)}
+  .io{grid-template-columns:minmax(0,1fr)}
+  .io .in{border-right:0;border-bottom:1px solid var(--rule-2)}
+  .io .arrow{display:none}
+  .six,.fv,.steps,.sort,.opsrow,.nogroup,.synth,.crit{grid-template-columns:minmax(0,1fr)}
+  .root .rio{grid-template-columns:minmax(0,1fr)}
+  .root .rio .mid{padding:2px 0}
+  .qs,.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .close li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .rule li{grid-template-columns:28px minmax(0,1fr)}
+  .rule li .lb{grid-column:2;justify-self:start}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Đồ án · Tư duy Trí tuệ Nhân tạo · Giám định âm thanh</div>
+    <h1>VoiceAudit <span>· kiểm định bản ghi âm bị chỉnh sửa</span></h1>
+    <p class="thesis">Người nhận một tệp ghi âm cần biết <b>tệp có bị sửa không, sửa kiểu gì, ở đoạn nào</b>, và thao tác đó <b>vô hại hay làm sai lệch lời nói</b>, trước khi dùng tệp làm bằng chứng. Công cụ hiện có chỉ trả lời "thật hay giả" cho cả tệp, nên người chỉ lọc tiếng ồn bị xếp chung với kẻ chèn lời giả.</p>
+    <div class="verdicts" role="list" aria-label="Bốn nhãn kết luận">
+      <div class="vd l01" role="listitem"><span class="code">01</span><span class="name">Không chỉnh sửa</span><span class="what">không thấy dấu vết của 8 thao tác</span></div>
+      <div class="vd l02" role="listitem"><span class="code">02</span><span class="name">Chỉnh sửa hậu kỳ</span><span class="what">xử lý trên lời có sẵn, chỉ đổi cách nghe</span></div>
+      <div class="vd l03" role="listitem"><span class="code">03</span><span class="name">Ghép hoặc chèn đoạn</span><span class="what">sửa chuỗi lời: chèn, xoá, thay, giọng máy</span></div>
+      <div class="vd l04" role="listitem"><span class="code">04</span><span class="name">Không đủ cơ sở</span><span class="what">từ chối kết luận, luôn kèm lý do</span></div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Chuỗi tư duy của bài giảng (AI201-5, trang 19), áp vào VoiceAudit</div>
+      <div class="chain">
+        <a href="#phan-ra"><span class="k">PHÂN RÃ</span><span class="t">vấn đề ban đầu → 7 → 9 → 36</span><span class="d">chia tới khi giải được, rồi tổng hợp</span></a>
+        <a href="#truu-tuong" class="ag"><span class="k">TRỪU TƯỢNG HÓA</span><span class="t">giữ đúng dấu vết sửa</span><span class="d">bỏ nội dung, người nói, công cụ</span></a>
+        <a href="#mau"><span class="k">NHẬN DẠNG MẪU</span><span class="t">mỗi ô của cây = bài toán đã có lời giải</span><span class="d">tìm điểm chung</span></a>
+        <a href="#tong-quat" class="ag"><span class="k">TỔNG QUÁT HÓA</span><span class="t">8 thao tác, 1 khung giải</span><span class="d">mở rộng sang tình huống mới</span></a>
+        <a href="#ket"><span class="k">THIẾT KẾ THUẬT TOÁN</span><span class="t">ghép chuyên gia + luật nhãn</span><span class="d">dựng hồ sơ giám định</span></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Mục lục">
+  <div class="wrap">
+    <a href="#sau-muc"><b>1</b>Sáu mục</a>
+    <a href="#thao-tac"><b>1b</b>8 thao tác</a>
+    <a href="#phan-ra"><b>2</b>Phân rã</a>
+    <a href="#truu-tuong"><b>3</b>Trừu tượng hóa</a>
+    <a href="#mau"><b>4</b>Nhận dạng mẫu</a>
+    <a href="#tong-quat"><b>5</b>Tổng quát hóa</a>
+    <a href="#ket"><b>6</b>Tóm lại</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- =========================== 1. SÁU MỤC =========================== -->
+<section class="part" id="sau-muc">
+  <div class="ph">
+    <div class="eyebrow">Phần 1 · Định nghĩa bài toán</div>
+    <h2><em>01</em>Sáu mục: bài toán được khoanh như thế nào</h2>
+    <p>Sáu mục là "hợp đồng" của đề tài. Mọi phân tích phía sau đều lấy cơ sở từ đây.</p>
+  </div>
+
+  <div class="panel io">
+    <div class="in">
+      <h4>Input</h4>
+      <ul>
+        <li><b>1 tệp ghi âm</b> có tiếng người nói</li>
+        <li>ghi bằng điện thoại, máy ghi âm, phần mềm họp trực tuyến, hoặc nhận lại qua ứng dụng nhắn tin</li>
+      </ul>
+    </div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div>
+      <h4>Output: một hồ sơ giám định sơ bộ</h4>
+      <ul>
+        <li><b>Nhãn</b> cho cả tệp: 01 · 02 · 03 · 04 (04 luôn kèm lý do)</li>
+        <li>khi 02 / 03: <b>mỗi thao tác một dòng</b>, ghi loại · phạm vi · mốc · mức độ · kênh</li>
+        <li>mỗi thao tác <b>một ảnh</b> dạng sóng và phổ có tô vùng, cùng <b>giải thích ≥ 2 dấu hiệu có số</b> so với kho tệp thật</li>
+        <li>phụ: cảnh báo, bảng mốc, bảng điểm và ngưỡng, báo cáo PDF</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Ví dụ output (lấy từ mục Output) <span class="src">tệp 6 giây · nhãn 03 · hai thao tác</span></h3>
+    <div class="panel dossier">
+      <div class="head"><span class="lb l03">NHÃN 03</span><span>Ghép hoặc chèn đoạn. Thao tác 03 thắng thao tác 02 theo luật nhãn.</span></div>
+      <div class="scroll"><svg class="wave" id="wave" viewBox="0 0 600 176" role="img" aria-label="Dạng sóng tệp 6 giây: vùng giọng máy từ 1,13 đến 2,48 giây; khử ồn phủ cả tệp; 0,3 giây đầu và cuối không soi"></svg></div>
+      <div class="oprows">
+        <div class="oprow"><span class="lb l03">03</span>
+          <div><div class="meta"><b>Giọng máy</b><span>· một đoạn ·</span><span class="mono num">00:01,13 – 00:02,48</span><span class="sev" style="color:var(--block)">sai lệch nặng</span></div>
+          <div class="why">"chỗ nối lệch hơn 98 % chỗ nối tự nhiên trong kho tham chiếu; độ giống giọng tổng hợp trong đoạn cao hơn 99 %"</div></div></div>
+        <div class="oprow"><span class="lb l02">02</span>
+          <div><div class="meta"><b>Khử ồn</b><span>· cả tệp ·</span><span class="mono num">00:00,00 – 00:06,00</span><span class="sev" style="color:var(--accent)">vô hại</span></div>
+          <div class="why">"tiếng nền thấp hơn 99 % kho tham chiếu; nền giữa các câu phẳng hơn 97 %"</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Bốn mục còn lại</h3>
+    <div class="six">
+      <div class="panel">
+        <h4>Requirement · 4 nhóm chỉ tiêu</h4>
+        <ul>
+          <li><b>Phát hiện đúng</b>: phân loại đúng, không bỏ sót tệp bị sửa, không vu oan tệp thật, không kết tội khử ồn vô hại, bắt được từng thao tác</li>
+          <li><b>Định vị đúng chỗ</b>: mốc thời gian, vùng khoanh trùng chỗ sửa</li>
+          <li><b>Bằng chứng</b>: đầy đủ, người ngoài xem ảnh hiểu được, hồ sơ không tự mâu thuẫn</li>
+          <li><b>Tốc độ</b>: chạy kịp trên máy cá nhân, không GPU</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4>Constraint · điều kiện tệp được nhận</h4>
+        <ul>
+          <li><b>Tệp</b>: định dạng, dung lượng, độ dài 3 giây – 10 phút, 1–2 kênh</li>
+          <li><b>Tín hiệu</b>: dải tần, âm lượng, cắt đỉnh, tiếng ồn, tỉ lệ tiếng nói</li>
+          <li><b>Người nói và phòng</b>: loại âm thanh, kiểu nói, ngôn ngữ, số người nói, độ vang</li>
+          <li>vi phạm thì <span class="lb l04">04</span> kèm lý do, hoặc cảnh báo</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4>Scope · hệ thống trả lời gì</h4>
+        <ul>
+          <li><b>5 loại thao tác</b>, xét theo phạm vi thành <b>8 thao tác</b> (xem phần 1b)</li>
+          <li>nhãn dựa trên <b>dấu vết kỹ thuật</b>, không dựa trên nội dung lời</li>
+          <li>mức độ gán cố định theo loại; luật ra nhãn cố định (bên dưới)</li>
+          <li><b>Không làm</b>: chép lời, đoán ai sửa, đoán công cụ, phán nội dung đúng sai</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4>Assumption · điều coi là đúng</h4>
+        <ul>
+          <li>tệp không phải bản phát lại qua loa rồi ghi lại</li>
+          <li>nén khi gửi qua ứng dụng là biến đổi <b>đều</b> trên cả tệp</li>
+          <li>người sửa dùng công cụ phổ thông, không cố tình phá dấu vết, sửa cục bộ ≤ 50 % tệp</li>
+          <li>người dùng chấp nhận nhãn 04 và đưa tệp cho người nghe lại</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Luật ra nhãn (mục Scope) <span class="src">xét lần lượt, dừng ở điều đầu tiên đúng</span></h3>
+    <div class="panel"><ol class="rule">
+      <li><span>vi phạm một điều kiện có ghi 04</span><span class="lb l04">→ 04 · không phân tích</span></li>
+      <li><span>không qua bước sàng lọc "tệp có dấu vết sửa nào không"</span><span class="lb l01">→ 01</span></li>
+      <li><span>có ít nhất một thao tác nhãn 03 được báo</span><span class="lb l03">→ 03</span></li>
+      <li><span>có ít nhất một thao tác nhãn 02 được báo</span><span class="lb l02">→ 02</span></li>
+      <li><span>qua sàng lọc nhưng không báo được thao tác nào (lưng chừng, bị kiểm chứng bác)</span><span class="lb l04">→ 04 · kèm lý do</span></li>
+    </ol></div>
+    <p class="notcount">Một thao tác được báo khi: <b>cả tệp</b> có xác suất đủ cao; <b>một đoạn</b> có điểm vượt ngưỡng riêng của loại đó <b>và</b> được bộ kiểm chứng độc lập đo lại xác nhận.</p>
+  </div>
+</section>
+
+<!-- =========================== 1b. 8 THAO TÁC =========================== -->
+<section class="part" id="thao-tac">
+  <div class="ph">
+    <div class="eyebrow">Phần 1b · Scope chi tiết</div>
+    <h2><em>1b</em>Tám thao tác hệ thống soi</h2>
+    <p><b>Phạm vi</b>: <i>cả tệp</i> phủ toàn tệp; <i>một đoạn</i> là một khoảng liên tục không quá nửa tệp. Dải màu dưới tên mỗi thao tác cho thấy dấu vết nằm ở đâu trên tệp.</p>
+  </div>
+
+  <div class="ops">
+    <div class="rowlabel"><span class="lb l02">02</span><span>đổi <b>cách nghe</b> của lời có sẵn</span></div>
+    <div class="opsrow">
+      <article class="op">
+        <div class="nm">Khử ồn cả tệp</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="0" y="3" width="100" height="10" rx="3" fill="var(--accent)" opacity=".55"/></svg>
+        <div class="tags"><span class="lb l02">02</span><span class="sev" style="color:var(--verify)">vô hại</span></div>
+        <p class="ex">ứng dụng ghi âm hay gọi điện tự lọc ồn; người dùng bấm "giảm ồn" cho dễ nghe</p>
+        <p class="tr"><b>Dấu vết:</b> nền bị hút xuống đều khắp tệp, khoảng lặng giữa câu phẳng bất thường</p>
+      </article>
+      <article class="op">
+        <div class="nm">Khử ồn một đoạn</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="36" y="3" width="26" height="10" rx="2" fill="var(--accent)"/></svg>
+        <div class="tags"><span class="lb l02">02</span><span class="sev" style="color:var(--accent)">đáng ngờ</span></div>
+        <p class="ex">chỉ lọc ồn một khúc, thường để che chỗ khác bị sửa</p>
+        <p class="tr"><b>Dấu vết:</b> nền trong đoạn thấp hẳn so với hai bên, có bước nhảy ở hai mép</p>
+      </article>
+      <article class="op">
+        <div class="nm">Đổi giọng cả tệp</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="0" y="3" width="100" height="10" rx="3" fill="var(--accent)"/></svg>
+        <div class="tags"><span class="lb l02">02</span><span class="sev" style="color:var(--block)">sai lệch</span></div>
+        <p class="ex">cả bản ghi bị biến thành giọng người khác, hoặc dịch cao độ để giấu người nói</p>
+        <p class="tr"><b>Dấu vết:</b> cao độ, âm sắc lệch khỏi giọng tự nhiên trên toàn tệp</p>
+      </article>
+      <article class="op">
+        <div class="nm">Đổi giọng một đoạn</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="44" y="3" width="22" height="10" rx="2" fill="var(--accent)"/></svg>
+        <div class="tags"><span class="lb l02">02</span><span class="sev" style="color:var(--block)">sai lệch</span></div>
+        <p class="ex">chỉ một câu bị biến giọng; lời trong đó có thể là lời mới của người khác</p>
+        <p class="tr"><b>Dấu vết:</b> cao độ, âm sắc trong đoạn khác hai bên, nhảy cao độ ở mép</p>
+      </article>
+    </div>
+
+    <div class="rowlabel" style="margin-top:6px"><span class="lb l03">03</span><span>đổi <b>chuỗi lời</b>: chèn, xoá, thay</span></div>
+    <div class="opsrow">
+      <article class="op">
+        <div class="nm">Ghép lời thật</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="40" y="3" width="18" height="10" fill="var(--block)" opacity=".55"/><rect x="39.5" y="0" width="1.4" height="16" fill="var(--block)"/><rect x="57.5" y="0" width="1.4" height="16" fill="var(--block)"/></svg>
+        <div class="tags"><span class="lb l03">03</span><span class="sev" style="color:var(--block)">sai lệch</span></div>
+        <p class="ex">lấy chữ "không" ở chỗ khác chèn vào: "tôi đồng ý" thành "tôi <u>không</u> đồng ý"</p>
+        <p class="tr"><b>Dấu vết:</b> hai mối nối; ở mép đoạn nền, phổ, nhịp không liền với lời quanh nó</p>
+      </article>
+      <article class="op">
+        <div class="nm">Xoá lời</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="45" y="3" width="10" height="10" fill="none" stroke="var(--block)" stroke-width=".8" stroke-dasharray="1.5 1.2"/><rect x="49.3" y="0" width="1.4" height="16" fill="var(--block)"/></svg>
+        <div class="tags"><span class="lb l03">03</span><span class="sev" style="color:var(--block)">sai lệch</span></div>
+        <p class="ex">cắt chữ "không": "tôi <s>không</s> đồng ý" thành "tôi đồng ý"</p>
+        <p class="tr"><b>Dấu vết:</b> chỉ <b>một mối nối</b>, không có đoạn bị biến đổi; khoanh vùng nhỏ ≤ 1 s chứa mối nối</p>
+      </article>
+      <article class="op">
+        <div class="nm">Giọng máy một đoạn</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="30" y="3" width="24" height="10" rx="2" fill="var(--block)"/></svg>
+        <div class="tags"><span class="lb l03">03</span><span class="sev" style="color:var(--block)">sai lệch nặng</span></div>
+        <p class="ex">AI nhái giọng người nói, đọc một câu họ chưa từng nói, rồi chèn vào bản ghi</p>
+        <p class="tr"><b>Dấu vết:</b> nhịp đều hơn, nền sạch và phẳng hơn lời quanh nó, mép đoạn nối lệch</p>
+      </article>
+      <article class="op">
+        <div class="nm">Giọng máy cả tệp</div>
+        <svg class="strip" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="5" width="100" height="6" rx="3" fill="var(--rule-2)"/><rect x="0" y="3" width="100" height="10" rx="3" fill="var(--block)"/></svg>
+        <div class="tags"><span class="lb l03">03</span><span class="sev" style="color:var(--block)">sai lệch nặng</span></div>
+        <p class="ex">toàn bộ "bản ghi" do AI tạo, giả làm lời của một người</p>
+        <p class="tr"><b>Dấu vết:</b> đặc trưng giọng tổng hợp trên toàn tệp, không có lời thật để so</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="basis"><b>VÌ SAO 8</b>3 loại có cả hai phạm vi (khử ồn, đổi giọng, giọng máy) và 2 loại chỉ có phạm vi một đoạn (ghép lời thật, xoá lời): ghép cả tệp bằng giọng thật chỉ là một bản ghi thật khác, còn xoá cả tệp thì không còn gì để soi. 3 × 2 + 2 × 1 = 8.</div>
+    <p class="notcount"><span class="lb l01">01</span>&nbsp; <b>Không tính là chỉnh sửa:</b> nén khi ghi hoặc khi gửi qua ứng dụng, đổi định dạng, cắt đầu và cuối tệp, đổi âm lượng cả tệp.</p>
+  </div>
+</section>
+
+<!-- =========================== 2. PHÂN RÃ =========================== -->
+<section class="part" id="phan-ra">
+  <div class="ph">
+    <div class="eyebrow">Phần 2 · Decomposition</div>
+    <h2><em>02</em>Phân rã: từ câu hỏi của người nhận tới từng việc giải được</h2>
+    <p>Cây có <b>bốn tầng</b>. Tầng 0 là vấn đề ban đầu, đúng Input và Output của sáu mục. Tầng 1 chia nó thành <b>7 câu người nhận tệp cần được trả lời</b>, xếp theo thứ tự luật ra nhãn ở phần 1. Tầng 2 đổi mỗi câu thành <b>câu hỏi kỹ thuật</b> đo được (câu 3 tách làm ba vì có ba nhóm thao tác). Tầng 3 là <b>36 vấn đề con</b>, mỗi cái đủ nhỏ để khớp một bài toán đã có lời giải (phần 4).</p>
+  </div>
+
+  <div class="legend">
+    <span><b>Đọc theo chiều dọc</b> là chia nhỏ: ô con giải một phần việc của ô cha.</span>
+    <span><b>Đọc theo chiều ngang</b> là liên kết: mỗi ô tầng 1 nhận kết quả của ô khác và trả kết quả cho ô sau (ghi ở phần giải thích bên dưới).</span>
+    <span>Bấm một ô tầng 1 để xem nó giải quyết gì.</span>
+  </div>
+
+<div class="panel scroll"><div class="pt" role="img" aria-label="Cây phân rã bốn tầng: vấn đề ban đầu, 7 câu người nhận hỏi, 9 câu hỏi kỹ thuật, 36 vấn đề con">
+<div class="tl" style="grid-row:1;grid-column:1"><b>Tầng 0</b>vấn đề ban đầu</div>
+<div class="n0" style="grid-row:1;grid-column:2/-1"><b>Có tin được tệp ghi âm này không?</b><span>nhận <b>1 tệp ghi âm</b> → trả <b>hồ sơ giám định</b>: một nhãn 01–04 cho cả tệp, mỗi thao tác một dòng (loại, phạm vi, mốc, mức độ), ảnh và dấu hiệu có số</span></div>
+<div class="tl" style="grid-row:2;grid-column:1"><b>Tầng 1</b>7 câu người nhận hỏi</div>
+<a class="n1" href="#o1" style="grid-row:2;grid-column:2/span 1"><i>Ô 1</i><b>Có đủ cơ sở để xét không?</b><small>→ báo cáo điều kiện, hoặc 04</small></a>
+<a class="n1" href="#o2" style="grid-row:2;grid-column:3/span 1"><i>Ô 2</i><b>Tệp có bị chỉnh sửa không?</b><small>→ có dấu vết, hoặc 01</small></a>
+<a class="n1" href="#o3" style="grid-row:2;grid-column:4/span 3"><i>Ô 3</i><b>Nếu có, sửa kiểu gì?</b><small>→ 8 đường điểm theo thời gian · chỉ đo, chưa quyết</small></a>
+<a class="n1" href="#o4" style="grid-row:2;grid-column:7/span 1"><i>Ô 4</i><b>Sửa ở đâu, phạm vi nào?</b><small>→ dòng thao tác có mốc</small></a>
+<a class="n1" href="#o5" style="grid-row:2;grid-column:8/span 1"><i>Ô 5</i><b>Vô hại hay làm sai lệch? Kết luận đã đủ chắc chưa?</b><small>→ nhãn và mức độ, hoặc 04</small></a>
+<a class="n1" href="#o6" style="grid-row:2;grid-column:9/span 1"><i>Ô 6</i><b>Người nhận có hiểu và kiểm lại được không?</b><small>→ hồ sơ giám định</small></a>
+<a class="n1 frame" href="#o7" style="grid-row:2;grid-column:10/span 1"><i>Ô 7</i><b>Có dùng được ngoài đời không?</b><small>→ số đo dùng chung, tốc độ · bao trùm cả cây</small></a>
+<div class="tl" style="grid-row:3;grid-column:1"><b>Tầng 2</b>9 câu hỏi kỹ thuật</div>
+<div class="n2" style="grid-row:3;grid-column:2"><span>Điều kiện tệp, tín hiệu, người nói và phòng có đạt không?</span></div>
+<div class="n2" style="grid-row:3;grid-column:3"><span>Dấu vết là biến thiên bình thường hay dấu vết sửa?</span></div>
+<div class="n2" style="grid-row:3;grid-column:4"><span>Có xử lý lời có sẵn không? <span class="lb l02">02</span></span></div>
+<div class="n2" style="grid-row:3;grid-column:5"><span>Có thay nội dung bằng lời thật không? <span class="lb l03">03</span></span></div>
+<div class="n2" style="grid-row:3;grid-column:6"><span>Có thay nội dung bằng giọng máy không? <span class="lb l03">03</span></span></div>
+<div class="n2" style="grid-row:3;grid-column:7"><span>Vượt ngưỡng nào, ở đâu, gộp thành dòng nào?</span></div>
+<div class="n2" style="grid-row:3;grid-column:8"><span>Nặng tới đâu, nhãn gì, đủ chắc chưa?</span></div>
+<div class="n2" style="grid-row:3;grid-column:9"><span>Bằng chứng nào để người nhận tự kiểm lại?</span></div>
+<div class="n2" style="grid-row:3;grid-column:10"><span>Đo thế nào để kịp và đúng ngoài đời?</span></div>
+<div class="tl" style="grid-row:4;grid-column:1"><b>Tầng 3</b>36 vấn đề con</div>
+<div class="n3" style="grid-row:4;grid-column:2"><span>Kiểm tệp</span><span>Đo tín hiệu</span><span>Ước lượng điều kiện</span><span>Người nói và phòng</span><span>Quyết định điều kiện</span></div>
+<div class="n3" style="grid-row:4;grid-column:3"><span>Chuyên gia sàng lọc</span><span>Kho tệp thật</span></div>
+<div class="n3" style="grid-row:4;grid-column:4"><span>Khử ồn cả tệp</span><span>Đổi giọng cả tệp</span><span>Khử ồn một đoạn</span><span>Đổi giọng một đoạn</span></div>
+<div class="n3" style="grid-row:4;grid-column:5"><span>Mối ghép lời thật</span><span>Mối xoá lời</span><span>Vùng đoạn ghép</span></div>
+<div class="n3" style="grid-row:4;grid-column:6"><span>Giọng máy cả tệp</span><span>Giọng máy một đoạn</span></div>
+<div class="n3" style="grid-row:4;grid-column:7"><span>Đặt ngưỡng từng thao tác</span><span>Giải mã dòng</span><span>Gộp dòng nhiều chuyên gia</span><span>Giới hạn vùng soi</span><span>Tệp hai kênh</span></div>
+<div class="n3" style="grid-row:4;grid-column:8"><span>Kiểm chứng độc lập</span><span>Nhiều thao tác và vùng xám</span><span>Mức độ theo loại</span><span>Luật nhãn</span><span>Thứ tự áp thao tác</span></div>
+<div class="n3" style="grid-row:4;grid-column:9"><span>Phiếu bằng chứng</span><span>Ảnh</span><span>Giải thích, bảng, PDF</span><span>Khảo sát người ngoài</span></div>
+<div class="n3" style="grid-row:4;grid-column:10"><span>Khung 20 ms</span><span>Vector cả tệp</span><span>Bộ thích nghi riêng</span><span>Tốc độ xử lý</span><span>Tệp dài và ghi âm thật</span><span>Kiểm thử và tập khoá</span></div>
+</div></div>
+
+  <div class="block">
+    <h3>Từng nhánh giải quyết gì</h3>
+    <p class="hint" style="margin:0;font-size:.84rem;color:var(--ink-2)">Mỗi nhánh đọc từ trên xuống: ô tầng 1 (giải quyết gì · nhận gì, từ ô nào · trả ra gì, cho ô nào) → câu hỏi kỹ thuật ở tầng 2 → các vấn đề con ở tầng 3.</p>
+<div class="pd" id="o1">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 1</span><b>Có đủ cơ sở để xét không?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Không kết luận trên tệp hỏng, quá ồn, quá ngắn hoặc không phải lời nói. Đây là bước 1 của luật ra nhãn.</p>
+    <div class="pd-io"><div><b>NHẬN</b>tệp ghi âm (Input của sáu mục)</div><div><b>TRẢ RA</b>báo cáo điều kiện: ngôn ngữ, số người nói, cảnh báo → <a href="#o7">ô 7</a> đo tiếp, <a href="#o2">ô 2</a> và <a href="#o4">ô 4</a> so với kho và ngưỡng đúng ngôn ngữ, <a href="#o5">ô 5</a> ghi cảnh báo</div><div><b>DỪNG SỚM</b><span class="lb l04">04</span> không đủ điều kiện → 04 kèm lý do, dừng</div></div>
+    <p class="pd-req"><b>Đo bằng:</b> số tệp bị loại theo từng lý do — chỉ báo cáo, không có mức đạt (hợp đồng không tính chúng vào «Từ chối đúng mức»)</p>
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Điều kiện tệp, tín hiệu, người nói và phòng có đạt 24 điều kiện của mục Constraint không?</div>
+      <span class="pd-tier">Tầng 3 · 5 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Kiểm tệp</b>tệp có đọc được, đúng 8 định dạng, ≤ 250 MB, dài 3 giây – 10 phút, 1–2 kênh không</div><div><b>Đo tín hiệu</b>dải tần, âm lượng, cắt đỉnh, đoạn mất tín hiệu, lượng tiếng nói có đủ để xét không</div><div><b>Ước lượng điều kiện</b>tiếng ồn, nhạc hoặc TV nền, tiếng vang nặng tới đâu; dùng mô hình vì đo thẳng trên tín hiệu không đủ tin</div><div><b>Người nói và phòng</b>mấy người nói, ngôn ngữ gì, nói chồng bao nhiêu, có phải lời nói không</div><div><b>Quyết định điều kiện</b>gom mọi lý do thành một kết luận: nhận · nhận kèm cảnh báo · 04 kèm lý do</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o2">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 2</span><b>Tệp có bị chỉnh sửa không?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Chỉ trả lời một câu — có dấu vết sửa hay không — và không vu oan tệp thật: nén, gửi qua ứng dụng, thiết bị cũng để lại dấu vết nhưng không phải là sửa. Đây là bước 2 của luật ra nhãn.</p>
+    <div class="pd-io"><div><b>NHẬN</b>số đo cả tệp (<a href="#o7">ô 7</a>) và điểm cao nhất của 8 đường điểm (<a href="#o3">ô 3</a>), so với kho tệp thật đúng ngôn ngữ (<a href="#o1">ô 1</a>)</div><div><b>TRẢ RA</b>một câu có / không cho cả tệp: «có» thì cho <a href="#o4">ô 4</a> chạy; kho tệp thật → <a href="#o6">ô 6</a> làm mốc so sánh</div><div><b>DỪNG SỚM</b><span class="lb l01">01</span> không có gì vượt mức tệp thật → 01, dừng; ô 4 không chạy</div></div>
+    <p class="pd-req"><b>Đo bằng chỉ tiêu:</b> Không vu oan tệp thật · Không bỏ sót tệp bị sửa · Báo «có sửa» đáng tin</p>
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Dấu vết trên tệp là biến thiên bình thường hay dấu vết sửa?</div>
+      <span class="pd-tier">Tầng 3 · 2 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Chuyên gia sàng lọc</b>một mô hình trả lời gộp: tệp có dấu vết của thao tác nào trong 8 không</div><div><b>Kho tệp thật</b>số đo của tệp thật tự nhiên theo ngôn ngữ, làm mốc cho câu «cao hơn X % tệp thật»</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o3">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 3</span><b>Nếu có, sửa kiểu gì?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Đo dấu vết của từng thao tác: mỗi chuyên gia chấm điểm cho thao tác của mình ở từng lúc trong tệp. Ô này chỉ đo, chưa quyết định gì; điểm của nó là cơ sở để ô 2 sàng lọc và ô 4 khoanh vùng.</p>
+    <div class="pd-io"><div><b>NHẬN</b>số đo dùng chung (<a href="#o7">ô 7</a>)</div><div><b>TRẢ RA</b>8 đường điểm theo thời gian (mỗi 20 ms một điểm), kèm xác suất cho cả tệp → <a href="#o2">ô 2</a> sàng lọc, <a href="#o4">ô 4</a> khoanh vùng</div><div><b>ĐO BẰNG CHỈ TIÊU</b>Phân loại đúng; mỗi nhóm dưới đây có thêm chỉ tiêu riêng</div></div>
+    
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Có dấu vết xử lý lời có sẵn không — lời vẫn của người nói, chỉ đổi cách nghe? <span class="lb l02">→ 02</span></div><p class="pd-req"><b>Chỉ tiêu riêng:</b> Không kết tội khử ồn vô hại</p>
+      <span class="pd-tier">Tầng 3 · 4 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Khử ồn cả tệp</b>tệp có bị lọc ồn toàn bộ không</div><div><b>Đổi giọng cả tệp</b>cả tệp có bị dịch cao độ hay đổi giọng bằng AI không</div><div><b>Khử ồn một đoạn</b>đoạn nào bị lọc ồn riêng</div><div><b>Đổi giọng một đoạn</b>đoạn nào bị đổi giọng riêng</div></div></div>
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Có chỗ lời thật bị chèn, thay hoặc xoá không? <span class="lb l03">→ 03</span></div><p class="pd-req"><b>Chỉ tiêu riêng:</b> Bắt được ghép lời thật · Bắt được xoá lời</p>
+      <span class="pd-tier">Tầng 3 · 3 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Mối ghép lời thật</b>chỗ nối nơi lời thật lấy từ chỗ khác được chèn hoặc thay vào</div><div><b>Mối xoá lời</b>chỗ nối còn lại sau khi một đoạn lời bị cắt bỏ</div><div><b>Vùng đoạn ghép</b>khoanh trọn đoạn bị chèn hoặc thay, không chỉ hai mép</div></div></div>
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Có lời do máy đọc không? <span class="lb l03">→ 03</span></div><p class="pd-req"><b>Chỉ tiêu riêng:</b> Không nhầm lời thật thành giọng máy · Bắt được giọng máy một đoạn, cả tệp</p>
+      <span class="pd-tier">Tầng 3 · 2 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Giọng máy cả tệp</b>cả tệp có do máy đọc, giả làm một người không</div><div><b>Giọng máy một đoạn</b>đoạn nào do máy đọc chèn vào, và tách nó khỏi lời thật bị ghép</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o4">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 4</span><b>Sửa ở đâu, phạm vi nào?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Chỉ ra thao tác nào, ở đoạn nào: đoạn nào vượt ngưỡng của thao tác đó thì thành một dòng. Người nhận cần mốc này để tua tới đúng chỗ nghe lại.</p>
+    <div class="pd-io"><div><b>NHẬN</b>từng đường điểm (<a href="#o3">ô 3</a>); chỉ chạy khi <a href="#o2">ô 2</a> nói «có»</div><div><b>TRẢ RA</b>dòng thao tác ứng viên: loại · cả tệp hay một đoạn · mốc bắt đầu – kết thúc · kênh → <a href="#o5">ô 5</a></div><div><b>ĐO BẰNG CHỈ TIÊU</b>Mốc thời gian chính xác · Vùng khoanh trùng chỗ sửa</div></div>
+    
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Mỗi thao tác cần vượt ngưỡng nào, điểm vượt ngưỡng nằm ở đâu, và gộp thành những dòng thao tác nào?</div>
+      <span class="pd-tier">Tầng 3 · 5 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Đặt ngưỡng từng thao tác</b>mỗi thao tác một ngưỡng chọn trên tệp thật cùng ngôn ngữ, để tệp thật hiếm khi bị báo nhầm (cả tệp ≤ 3 %)</div><div><b>Giải mã dòng</b>biến điểm vượt ngưỡng thành đoạn có mép bắt đầu – kết thúc; xoá lời khoanh vùng nhỏ quanh mối nối</div><div><b>Gộp dòng nhiều chuyên gia</b>nhiều chuyên gia cùng báo một chỗ thì giữ một dòng, chọn đúng loại</div><div><b>Giới hạn vùng soi</b>bỏ 0,3 s đầu và cuối; một khúc có quá nhiều dòng thì cảnh báo</div><div><b>Tệp hai kênh</b>phân tích từng kênh, ghi mốc theo kênh trái / phải</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o5">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 5</span><b>Vô hại hay làm sai lệch? Kết luận đã đủ chắc chưa?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Tách người chỉ lọc ồn khỏi người chèn lời, và không kết luận khi chưa chắc. Đây là bước 3–5 của luật ra nhãn.</p>
+    <div class="pd-io"><div><b>NHẬN</b>dòng thao tác ứng viên (<a href="#o4">ô 4</a>), báo cáo điều kiện (<a href="#o1">ô 1</a>)</div><div><b>TRẢ RA</b>một nhãn cho cả tệp và phiếu thao tác có mức độ → <a href="#o6">ô 6</a></div><div><b>DỪNG SỚM</b><span class="lb l04">04</span> chưa đủ chắc → 04 kèm lý do</div></div>
+    <p class="pd-req"><b>Đo bằng chỉ tiêu:</b> Phân loại đúng · Từ chối đúng mức · Hồ sơ không tự mâu thuẫn</p>
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Mỗi dòng nặng tới đâu, cả tệp mang nhãn gì, và kết luận đã đủ chắc chưa?</div>
+      <span class="pd-tier">Tầng 3 · 5 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Kiểm chứng độc lập</b>đo lại từng dòng bằng một cách khác: xác nhận thì giữ, bác thì bỏ hoặc 04</div><div><b>Nhiều thao tác và vùng xám</b>tệp có nhiều chỗ sửa; xác suất lưng chừng 0,4–0,6 thì 04 kèm lý do</div><div><b>Mức độ theo loại</b>vô hại · đáng ngờ · sai lệch · sai lệch nặng, tra bảng theo thao tác</div><div><b>Luật nhãn</b>có ghép, xoá, giọng máy → 03; chỉ khử ồn, đổi giọng → 02; không còn dòng nào → 01</div><div><b>Thứ tự áp thao tác</b>sửa đoạn trước hay xử lý cả tệp trước — hướng mở, chưa vào Output</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o6">
+  <div class="pd-1">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 6</span><b>Người nhận có hiểu và kiểm lại được không?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Kết luận chỉ có giá trị khi người nhận xem được và tự kiểm lại được.</p>
+    <div class="pd-io"><div><b>NHẬN</b>nhãn và phiếu thao tác (<a href="#o5">ô 5</a>), kho tệp thật (<a href="#o2">ô 2</a>)</div><div><b>TRẢ RA</b>hồ sơ giám định — chính là Output của sáu mục</div><div><b>ĐO BẰNG CHỈ TIÊU</b>Bằng chứng đầy đủ · Bằng chứng dễ hiểu</div></div>
+    
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Bằng chứng nào cho mỗi thao tác để người nhận tự kiểm lại?</div>
+      <span class="pd-tier">Tầng 3 · 4 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Phiếu bằng chứng</b>mỗi thao tác ≥ 2 dấu hiệu có số, kèm «cao hơn X % tệp thật»</div><div><b>Ảnh</b>dạng sóng và phổ của chính tệp, tô đúng đoạn bị sửa</div><div><b>Giải thích, bảng, PDF</b>giải thích tiếng Việt, bảng mốc, điểm và ngưỡng; PDF có mã băm và tuyên bố giới hạn</div><div><b>Khảo sát người ngoài</b>≥ 3 người ngoài nhóm xem ảnh có đoán đúng loại thao tác không</div></div></div>
+  </div>
+</div>
+<div class="pd" id="o7">
+  <div class="pd-1 frame">
+    <div class="pd-h"><span class="pd-tier">Tầng 1 · Ô 7</span><b>Có dùng được ngoài đời không?</b></div>
+    <p class="pd-why"><b>Giải quyết:</b> Câu trả lời phải đến kịp, và vẫn đúng với tệp dài và ghi âm thật, không chỉ trên dữ liệu mẫu. Ô này bao trùm cả cây.</p>
+    <div class="pd-io"><div><b>NHẬN</b>tệp đã qua <a href="#o1">ô 1</a></div><div><b>TRẢ RA</b>số đo dùng chung → <a href="#o2">ô 2</a>, <a href="#o3">ô 3</a>; với cả cây: tốc độ và độ đúng trên tệp dài, ghi âm thật</div><div><b>ĐO BẰNG CHỈ TIÊU</b>Xử lý kịp thời</div></div>
+    
+  </div>
+  <div class="pd-kids">
+    <div class="pd-2"><span class="pd-tier">Tầng 2 · câu hỏi kỹ thuật</span><div class="q">Đo thế nào để chạy kịp và vẫn đúng ngoài đời?</div>
+      <span class="pd-tier">Tầng 3 · 6 vấn đề con — mỗi cái giải một phần câu hỏi trên</span>
+      <div class="pd-3"><div><b>Khung 20 ms</b>mô hình nền biến mỗi 20 ms âm thanh thành một vector — nền cho câu hỏi «ở đâu»</div><div><b>Vector cả tệp</b>một vector cho cả tệp — nền cho thao tác phủ cả tệp và cho sàng lọc</div><div><b>Bộ thích nghi riêng</b>tinh chỉnh nhẹ mô hình nền cho từng nhóm thao tác để bắt dấu vết tinh hơn</div><div><b>Tốc độ xử lý</b>5 phút âm thanh xong trong ≤ 3 phút trên CPU, không GPU</div><div><b>Tệp dài và ghi âm thật</b>mức vu oan không được tăng theo độ dài tệp; đúng cả với ghi âm Zoom, livestream</div><div><b>Kiểm thử và tập khoá</b>mỗi nhãn, mỗi trường hợp một bộ test; chỉ tiêu chốt chấm một lần trên tập khoá</div></div></div>
+  </div>
+</div>
+  </div>
+
+  <div class="block">
+    <h3>Tổng hợp lại: giải từ dưới lên thành Output gốc</h3>
+    <div class="panel synth">
+      <div><i>BƯỚC 1 · TẦNG 3</i><b>Giải 36 vấn đề con</b><span>mỗi vấn đề con khớp một bài toán đã có lời giải (phần 4)</span></div>
+      <div><i>BƯỚC 2 · TẦNG 2</i><b>Trả lời 9 câu hỏi kỹ thuật</b><span>gom kết quả các vấn đề con của cùng một câu</span></div>
+      <div><i>BƯỚC 3 · TẦNG 1</i><b>Trả lời 7 câu của người nhận</b><span>ô nào cũng nhận kết quả của ô khác, như các mũi tên ở đường đi bên dưới</span></div>
+      <div><i>BƯỚC 4 · TẦNG 0</i><b>Trả lời «có tin được không»</b><span>luật nhãn gom mọi dòng thành một nhãn; hồ sơ giám định là Output gốc</span></div>
+    </div>
+    <div class="panel trip" aria-label="Đường đi của một tệp khi chạy">
+      <span><i>tệp</i></span><span class="sep">→</span>
+      <span><i>ô 1</i>báo cáo điều kiện</span><span class="sep">→</span>
+      <span><i>ô 7</i>số đo dùng chung</span><span class="sep">→</span>
+      <span><i>ô 3</i>điểm của từng thao tác</span><span class="sep">→</span>
+      <span><i>ô 2</i>có dấu vết hay 01</span><span class="sep">→</span>
+      <span><i>ô 4</i>dòng thao tác có mốc</span><span class="sep">→</span>
+      <span><i>ô 5</i>nhãn · mức độ</span><span class="sep">→</span>
+      <span><i>ô 6</i>hồ sơ giám định</span>
+    </div>
+    <p class="hint" style="margin:0;font-size:.82rem;color:var(--ink-3)">Thứ tự chạy khác thứ tự đọc cây ở hai chỗ: ô 7 đo tệp trước để mọi ô sau dùng chung, và ô 2 dùng điểm của ô 3 để sàng lọc.</p>
+  </div>
+
+  <div class="block">
+    <h3>Chia theo nguyên tắc nào</h3>
+    <div class="crit">
+      <div class="panel"><b>Mỗi ô ghi rõ nhận gì, trả ra gì</b><span>nên giải riêng được, và ghép lại bằng cách nối đầu ra của ô này với đầu vào của ô kia.</span></div>
+      <div class="panel"><b>Ô con giải đúng một phần của ô cha</b><span>ô 1 nhận Input gốc, ô 6 trả Output gốc; mỗi câu hỏi kỹ thuật lo một phần câu trả lời của câu tầng 1 chứa nó.</span></div>
+      <div class="panel"><b>Chia theo câu hỏi của người nhận</b><span>đủ cơ sở không · có sửa không · kiểu gì · ở đâu · vô hại hay sai lệch, đủ chắc chưa · hiểu và kiểm lại được không · dùng được ngoài đời không.</span></div>
+      <div class="panel"><b>Không chồng lấn, dừng khi giải được</b><span>mỗi thao tác thuộc đúng một nhóm (xử lý lời có sẵn, lời thật, giọng máy); dừng chia khi vấn đề con khớp một bài toán đã có lời giải.</span></div>
+    </div>
+    <div class="basis"><b>CƠ SỞ</b>Ô 2, 3, 4 chỉ đo và ra điểm số; ô 5 dùng luật trong Scope để suy ra nhãn. Kết luận vì thế đọc được, kiểm lại được, và đổi luật không cần học lại.</div>
+  </div>
+</section>
+
+<!-- =========================== 3. TRỪU TƯỢNG HÓA =========================== -->
+<section class="part" id="truu-tuong">
+  <div class="ph">
+    <div class="eyebrow">Phần 3 · Abstraction</div>
+    <h2><em>03</em>Trừu tượng hóa: giữ đúng dấu vết sửa</h2>
+  </div>
+  <p class="theory"><b>Lý thuyết:</b> trừu tượng hóa là loại bỏ có chọn lọc các chi tiết không liên quan để tập trung vào thông tin cốt lõi cần cho việc giải quyết vấn đề. <span class="src">AI201-5 · trang 3</span></p>
+
+  <div class="block">
+    <h3>Câu hỏi đời thường thành câu hỏi kỹ thuật</h3>
+    <div class="panel io">
+      <div class="in"><h4>Trước</h4><p style="font-size:1rem">"Tôi có thể tin tệp ghi âm này không?"</p></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div><h4>Sau trừu tượng hóa</h4><p style="font-size:1rem">"Tệp mang dấu vết của <b>thao tác nào</b>, ở <b>phạm vi</b> nào, <b>vị trí</b> nào, <b>mức độ</b> nào? Nếu không đủ cơ sở thì vì sao?"</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Sáu câu hỏi để quyết định giữ hay bỏ một chi tiết</h3>
+    <div class="qs">
+      <div><i>1</i><b>Có liên quan tới mục tiêu?</b><span>có làm đổi nhãn, mức độ hay vị trí không</span></div>
+      <div><i>2</i><b>Có đo được?</b><span>có để lại dấu vết kỹ thuật trên tín hiệu, hay chỉ đoán được</span></div>
+      <div><i>3</i><b>Có hướng lời giải?</b><span>giống bài toán nào đã có lời giải (phần 4)</span></div>
+      <div><i>4</i><b>Lời giải đủ tốt?</b><span>đủ tin cậy theo Requirement, vẫn đúng với công cụ, người nói chưa thấy</span></div>
+      <div><i>5</i><b>Chạy kịp?</b><span>trên máy cá nhân, không GPU</span></div>
+      <div><i>6</i><b>Sai thì có hại?</b><span>có vu oan tệp thật, có vượt vai trò sàng lọc không</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Kết quả lọc: mỗi chi tiết của tình huống thật đi về đâu</h3>
+    <div class="sort">
+      <div class="bin keep"><h4>Giữ đầy đủ<small>liên quan, đo được, có lời giải tốt</small></h4>
+        <div class="item"><b>Loại thao tác</b><span>quyết định nhãn 02 hay 03</span></div>
+        <div class="item"><b>Phạm vi</b><span>cả tệp hay một đoạn quyết định vô hại hay đáng ngờ</span></div>
+        <div class="item"><b>Vị trí, kênh</b><span>để nghe lại, trích dẫn; khác biệt với "thật hay giả"</span></div>
+        <div class="item"><b>Bằng chứng có số</b><span>so với kho tệp thật, người khác kiểm lại được</span></div>
+      </div>
+      <div class="bin coarse"><h4>Giữ ở mức thô hơn<small>liên quan nhưng lời giải chưa đủ tốt</small></h4>
+        <div class="item"><b>Mốc từng âm tiết → một vùng</b><span>chưa định vị ổn định tới âm tiết; một vùng đủ để tua nghe lại</span></div>
+        <div class="item"><b>Công cụ đã dùng → loại thao tác</b><span>tên công cụ không áp được cho công cụ mới, loại dấu vết thì áp được</span></div>
+        <div class="item"><b>Xoá lời → vùng nhỏ chứa mối nối</b><span>khó bắt nhất nhưng nguy hiểm, nên vẫn giữ; thiếu chắc thì 04</span></div>
+      </div>
+      <div class="bin cond"><h4>Thành điều kiện / giả định<small>không phải thứ cần tìm, nhưng ảnh hưởng kết quả</small></h4>
+        <div class="item"><b>Nén, truyền tải, thiết bị</b><span>bỏ qua thì dấu vết nén bị nhầm là sửa, vu oan tệp thật</span></div>
+        <div class="item"><b>Ồn, vang, cắt đỉnh, nhiều người nói</b><span>làm lời giải kém, nên cảnh báo hoặc 04</span></div>
+        <div class="item"><b>Phát lại qua loa, cố tình phá dấu vết</b><span>không đo được, nên đưa vào giả định và tuyên bố giới hạn</span></div>
+      </div>
+      <div class="bin drop"><h4>Bỏ<small>không đổi kết quả, hoặc vượt vai trò</small></h4>
+        <div class="item"><b>Nội dung lời</b><span>phán đúng sai là việc của giám định viên; rủi ro ghi vào tuyên bố giới hạn</span></div>
+        <div class="item"><b>Người nói là ai</b><span>không đổi nhãn, thêm rủi ro quyền riêng tư</span></div>
+        <div class="item"><b>Ý định người sửa</b><span>không đo được; mức độ gán theo loại</span></div>
+        <div class="item"><b>Thứ tự các lần sửa</b><span>chưa có lời giải đủ tin, nên để làm hướng mở (ô 5)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Trừu tượng hóa dữ liệu: mỗi lớp bỏ thêm chi tiết <span class="src">AI201-5 · trang 5, 21</span></h3>
+    <div class="panel ladder scroll">
+      <div><i>1</i><b>Tệp</b><span>8 định dạng, siêu dữ liệu</span><span class="cut">bỏ: khác biệt định dạng</span></div>
+      <div><i>2</i><b>Tín hiệu 16 kHz</b><span>một dạng chung</span><span class="cut">bỏ: thông tin tệp (chỉ dùng kiểm điều kiện)</span></div>
+      <div><i>3</i><b>Khung 20 ms</b><span>mỗi khung một vector</span><span class="cut">bỏ: giá trị từng mẫu</span></div>
+      <div><i>4</i><b>Vector gộp</b><span>một vector cho cả tệp</span><span class="cut">bỏ: thứ tự thời gian</span></div>
+      <div><i>5</i><b>Dòng thao tác</b><span>loại, phạm vi, mốc, điểm</span><span class="cut">bỏ: điểm từng khung</span></div>
+      <div><i>6</i><b>≥ 2 dấu hiệu</b><span>phần trăm so với kho tệp thật</span><span class="cut">bỏ: số đo ít lệch</span></div>
+    </div>
+    <p>Giống ví dụ điểm danh trong bài giảng: ảnh khuôn mặt thành vector đặc trưng, bỏ màu tóc, biểu cảm, ánh sáng. Ở đây bản ghi thành vector khung, bỏ giọng ai, nói gì, định dạng gì.</p>
+  </div>
+</section>
+
+<!-- =========================== 4. NHẬN DẠNG MẪU =========================== -->
+<section class="part" id="mau">
+  <div class="ph">
+    <div class="eyebrow">Phần 4 · Pattern recognition</div>
+    <h2><em>04</em>Nhận dạng mẫu: mỗi ô của cây giống bài toán nào đã có lời giải</h2>
+    <p>Trừu tượng hóa bỏ âm thanh, nội dung và công cụ, nên cấu trúc của từng ô trong cây ở phần 2 lộ ra. Việc còn lại là tìm bài toán gần nhất đã có lời giải để kế thừa phương pháp và cách chấm.</p>
+  </div>
+
+  <div class="panel cls">
+    <div class="name">Mẫu chung của cả bài toán</div>
+    <p class="def">Nhận một đối tượng đã hoàn thành, tìm dấu vết còn sót lại để biết nó có bị biến đổi không, loại nào, ở đâu; rồi kết luận kèm bằng chứng, hoặc trả lời "chưa đủ cơ sở".</p>
+  </div>
+
+  <div class="block">
+    <div class="panel scroll">
+      <table class="t">
+        <thead><tr><th>Ô trong cây (phần 2)</th><th>Mẫu cấu trúc</th><th>Bài toán gần nhất đã có lời giải</th></tr></thead>
+        <tbody>
+          <tr><td>Ô 1 · kiểm điều kiện</td><td>cổng chất lượng mẫu, có quyền từ chối</td><td class="mut">kiểm chất lượng ảnh vân tay trước khi so khớp; phát hiện dữ liệu ngoài miền</td></tr>
+          <tr><td>Ô 7 · đo một lần, dùng chung</td><td>biểu diễn dùng chung, đầu nhẹ cho từng việc</td><td class="mut">dùng mô hình nền đã huấn luyện sẵn, gắn bộ thích nghi nhỏ</td></tr>
+          <tr><td>Ô 3 · thao tác phủ cả tệp</td><td>phân loại cả đối tượng</td><td class="mut">chống giả mạo giọng nói ở mức câu</td></tr>
+          <tr><td>Ô 3, 4 · tìm vùng và mối nối theo thời gian</td><td>tìm sự kiện trong chuỗi; tìm điểm thay đổi</td><td class="mut">phát hiện sự kiện âm thanh; định vị đoạn giả một phần; điểm đổi trên chuỗi cảm biến</td></tr>
+          <tr><td>Ô 2 · sàng lọc có dấu vết hay không</td><td>bất thường so với mẫu bình thường</td><td class="mut">phát hiện tiếng máy bất thường; kiểm ngoại quan sản phẩm</td></tr>
+          <tr><td>Ô 5 · thứ tự các lần sửa (hướng mở)</td><td>suy luận thứ tự từ dấu vết chồng lớp</td><td class="mut">xác định thứ tự các lần lưu nén lại của ảnh</td></tr>
+          <tr><td>Ô 4, 5 · đặt ngưỡng, gộp dòng, kiểm chứng</td><td>ngưỡng ở mức báo nhầm cố định; gộp đề xuất; phát hiện hai tầng</td><td class="mut">xác minh sinh trắc học; loại khung chồng lấn trong phát hiện vật thể; bộ dò hai tầng</td></tr>
+          <tr><td>Ô 5 · luật nhãn</td><td>danh sách quyết định có thứ tự ưu tiên</td><td class="mut">phân loại phân cấp, thao tác nặng hơn thắng</td></tr>
+          <tr><td>Ô 6 · hồ sơ bằng chứng</td><td>kết luận truy ngược được về bằng chứng</td><td class="mut">phiếu kiểm tra chất lượng: lỗi, vị trí, ảnh, số đo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="basis"><b>NỐI VỚI HAI PHẦN KIA</b>Trừu tượng hóa làm lộ ra mẫu. Mẫu cho biết có hướng lời giải không và lời giải tốt tới đâu (câu hỏi 3 và 4), từ đó quay lại quyết định giữ, làm thô, hay bỏ một chi tiết. Tổng quát hóa thì gộp những phần cùng mẫu về một lời giải chung.</div>
+  </div>
+</section>
+
+<!-- =========================== 5. TỔNG QUÁT HÓA =========================== -->
+<section class="part" id="tong-quat">
+  <div class="ph">
+    <div class="eyebrow">Phần 5 · Generalization</div>
+    <h2><em>05</em>Tổng quát hóa: 5 loại, 2 trục, 8 thao tác, 1 khung giải</h2>
+  </div>
+  <p class="theory"><b>Lý thuyết:</b> tổng quát hóa là rút ra quy luật hoặc dạng tổng quát từ một số trường hợp cụ thể, để giải được cả tình huống chưa từng gặp. Làm <b>sau</b> trừu tượng hóa. <span class="src">AI201-5 · trang 11, 18, 20</span></p>
+
+  <div class="block">
+    <h3>Từ nhiều trường hợp ra một dạng chung <span class="src">AI201-5 · trang 13</span></h3>
+    <div class="gen">
+      <div class="five" aria-label="5 loại chỉnh sửa">
+        <div class="eyebrow" style="background:none;padding:0">5 trường hợp cụ thể</div>
+        <div>Khử ồn <span class="lb l02">02</span></div>
+        <div>Đổi giọng <span class="lb l02">02</span></div>
+        <div>Ghép lời thật <span class="lb l03">03</span></div>
+        <div>Xoá lời <span class="lb l03">03</span></div>
+        <div>Giọng máy <span class="lb l03">03</span></div>
+      </div>
+      <div class="ar" aria-hidden="true">→</div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">2 yếu tố cốt lõi = 8 thao tác</div>
+        <div class="matrix">
+          <div></div><div class="hd">Cả tệp</div><div class="hd">Một đoạn</div>
+          <div class="rh r02">02 · đổi cách nghe<small>xử lý lời có sẵn</small></div>
+          <div class="c r02"><span>khử ồn</span><span>đổi giọng</span></div>
+          <div class="c r02"><span>khử ồn</span><span>đổi giọng</span></div>
+          <div class="rh r03">03 · đổi chuỗi lời<small>chèn, xoá, thay</small></div>
+          <div class="c r03"><span>giọng máy</span></div>
+          <div class="c r03"><span>ghép lời thật</span><span>xoá lời</span><span>giọng máy</span></div>
+        </div>
+      </div>
+      <div class="ar" aria-hidden="true">→</div>
+      <div class="one">
+        <div class="eyebrow" style="border:0;background:none;padding:0">Dùng chung cho cả 8</div>
+        <div><b>1 dạng dòng</b><span>loại · phạm vi · mốc · mức độ · kênh · ảnh · dấu hiệu</span></div>
+        <div><b>1 khung giải</b><span>đề xuất rồi kiểm chứng</span></div>
+        <div><b>1 luật nhãn</b><span>chỉ nhắc 02 / 03, không nhắc tên thao tác</span></div>
+      </div>
+    </div>
+    <div class="panel" style="padding:10px 12px"><div class="pipe">
+      <span>lấy đặc trưng <small>(dùng chung)</small></span><span class="ar">→</span><span>chấm điểm <small>(riêng từng thao tác)</small></span><span class="ar">→</span>
+      <span>tìm mốc / vùng</span><span class="ar">→</span><span class="v">kiểm chứng bằng cách đo khác</span><span class="ar">→</span><span>ghi bằng chứng</span>
+    </div></div>
+  </div>
+
+  <div class="block">
+    <h3>Bốn bước của slide và cơ sở của từng bước</h3>
+    <div class="steps">
+      <div class="panel"><i>BƯỚC 1</i><b>Tìm điểm tương đồng</b>
+        <p>So 8 thao tác theo <b>mục tiêu</b> (cùng hỏi "có không, ở đâu"), <b>cấu trúc dữ liệu</b> (chỉ 2 dạng: cả tệp, hoặc dãy khung) và <b>phương pháp</b> (chỉ 3 dạng: phân loại cả tệp, tìm vùng, tìm mối nối).</p>
+        <p class="cs">Cơ sở: Output quy định mọi thao tác ra cùng một dạng dòng.</p></div>
+      <div class="panel"><i>BƯỚC 2</i><b>Rút yếu tố cốt lõi</b>
+        <p>Mọi thao tác chỉ khác nhau ở <b>tác động</b> (02 hay 03) và <b>phạm vi</b> (cả tệp hay một đoạn).</p>
+        <p class="cs">Cơ sở: Scope định nghĩa đúng hai trục này: "02 xử lý lời có sẵn, 03 sửa chuỗi lời"; "cả tệp / một đoạn ≤ 50 %".</p></div>
+      <div class="panel"><i>BƯỚC 3</i><b>Chiến lược giải chung</b>
+        <p><b>Đề xuất rồi kiểm chứng</b>: đặc trưng tính một lần, mỗi thao tác chấm điểm riêng, tìm vùng, kiểm chứng, ghi bằng chứng.</p>
+        <p class="cs">Cơ sở: Scope đòi đoạn phải vượt ngưỡng và được kiểm chứng độc lập xác nhận; Output đòi ≥ 2 dấu hiệu có số.</p></div>
+      <div class="panel"><i>BƯỚC 4</i><b>Đóng thành khung dùng lại</b>
+        <p>Một khuôn gói chuyên gia, một dạng dòng, một luật nhãn. Thêm thao tác mới chỉ cần thêm một gói.</p>
+        <p class="cs">Cơ sở: luật nhãn trong Scope chỉ nhắc 02 / 03, không nhắc tên thao tác.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Trên bài toán: VoiceAudit thuộc loại nào <span class="src">AI201-5 · trang 12</span></h3>
+    <div class="panel cls">
+      <div class="name">Pháp y tín hiệu ở mức sàng lọc</div>
+      <p class="def">Phát hiện và định vị nhiều loại biến đổi trên một đối tượng đã hoàn thành, tách khỏi biến thiên bình thường, có quyền từ chối, kết luận bằng luật và kèm bằng chứng.</p>
+      <p style="font-size:.86rem;color:var(--ink-2)">Cùng loại với kiểm định ảnh bị sửa, phát hiện gian lận giao dịch, kiểm tra chất lượng sản phẩm, giống như ví dụ xếp hàng ở ngân hàng và bệnh viện cùng là "bài toán điều phối hàng đợi". Biết đúng loại thì chọn được chiến lược của các bài toán cùng loại.</p>
+    </div>
+    <div class="panel scroll">
+      <table class="t">
+        <thead><tr><th>Bài toán nghe giống</th><th>Giống ở đâu</th><th>Khác bản chất ở đâu</th></tr></thead>
+        <tbody>
+          <tr><td>Phát hiện giọng giả</td><td class="mut">cùng xét âm thanh có bị can thiệp</td><td>chỉ trả "thật / giả" cho cả tệp; không tách sửa vô hại với sai lệch; không chỉ vị trí</td></tr>
+          <tr><td>Nhận dạng tiếng nói</td><td class="mut">cùng xử lý tiếng nói</td><td>mục tiêu là nội dung lời, đúng thứ VoiceAudit đã bỏ</td></tr>
+          <tr><td>Xác minh người nói</td><td class="mut">cùng xét giọng</td><td>mục tiêu là ai nói, cũng đã bỏ</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="basis"><b>CƠ SỞ</b>Mỗi thành phần của loại bài toán có trong sáu mục: đối tượng đã hoàn thành (Input), loại và vị trí (Output), biến thiên bình thường (Assumption: nén là biến đổi đều), bằng chứng (Output), quyền từ chối (nhãn 04). Slide trang 15 cảnh báo "giống mô tả không phải giống bản chất", nên ba bài toán trên bị loại.</div>
+  </div>
+
+  <div class="block">
+    <h3>Trên giải pháp: dùng lại cách giải khi điều kiện còn đúng <span class="src">AI201-5 · trang 12</span></h3>
+    <div class="panel scroll">
+      <table class="t">
+        <thead><tr><th>Cách giải dùng lại</th><th>Lấy từ bài toán</th><th>Vì sao dùng được ở đây</th></tr></thead>
+        <tbody>
+          <tr><td>Đề xuất rồi kiểm chứng</td><td class="mut">bộ dò hai tầng</td><td>Scope đòi đoạn được bộ kiểm chứng độc lập xác nhận</td></tr>
+          <tr><td>Đặt ngưỡng dựa trên tệp thật</td><td class="mut">xác minh sinh trắc học</td><td>Requirement có chỉ tiêu "không vu oan tệp thật"</td></tr>
+          <tr><td>So với kho mẫu bình thường</td><td class="mut">phát hiện bất thường</td><td>Output đòi dấu hiệu tính theo phần trăm kho tệp thật</td></tr>
+          <tr><td>Gộp các đoạn chồng nhau</td><td class="mut">phát hiện vật thể</td><td>Scope: chồng nhau quá 30 % thì giữ đoạn mạnh hơn</td></tr>
+          <tr><td>Tìm điểm thay đổi</td><td class="mut">chuỗi cảm biến</td><td>dấu vết của ghép và xoá là mối nối</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Từ chính bài toán: phần cố định và phần biến đổi <span class="src">AI201-5 · trang 14</span></h3>
+    <div class="fv">
+      <div class="panel f"><h4>Cố định (logic, cấu trúc)</h4><ul>
+        <li>4 nhãn, nguyên tắc 02 / 03, hai trục</li><li>luật nhãn 5 bước, mức độ tra bảng</li><li>dạng dòng, khung đề xuất rồi kiểm chứng</li></ul>
+        <p class="src" style="margin-top:8px;white-space:normal">cơ sở: sáu mục viết chúng thành luật và định nghĩa</p></div>
+      <div class="panel v"><h4>Biến đổi (dữ liệu, tham số)</h4><ul>
+        <li>ngôn ngữ, ngưỡng</li><li>công cụ sửa, thiết bị, kiểu nén</li><li>độ dài tệp, số kênh, số người nói</li></ul>
+        <p class="src" style="margin-top:8px;white-space:normal">cơ sở: Requirement đòi báo riêng theo từng thứ này</p></div>
+    </div>
+    <div class="panel scroll">
+      <table class="t">
+        <thead><tr><th>Điều gì xảy ra nếu…</th><th>Phải đổi</th><th>Giữ nguyên</th></tr></thead>
+        <tbody>
+          <tr><td>thêm một ngôn ngữ</td><td>ngưỡng, kho tham chiếu</td><td class="mut">luật, khung, khuôn gói</td></tr>
+          <tr><td>gặp công cụ sửa mới</td><td>không đổi gì</td><td class="mut">toàn bộ, vì bài toán định nghĩa theo dấu vết, không theo công cụ</td></tr>
+          <tr><td>thêm một loại thao tác</td><td>một gói, một dòng mức độ</td><td class="mut">luật nhãn, khung, hồ sơ</td></tr>
+          <tr><td>đổi sang ảnh, video</td><td>biểu diễn, chấm điểm</td><td class="mut">tầng quyết định và hồ sơ</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>VoiceAudit vì thế là một <b>nguyên mẫu</b> cho nhóm bài toán "giám định sơ bộ một đối tượng số đã hoàn thành".</p>
+  </div>
+
+  <div class="block">
+    <h3>Giới hạn: không gộp những gì chỉ giống về mô tả <span class="src">AI201-5 · trang 15</span></h3>
+    <div class="nogroup">
+      <div class="panel"><b>Xoá lời ≠ ghép lời thật</b><span>xoá để lại một mối nối; ghép để lại cả một đoạn</span></div>
+      <div class="panel"><b>Giọng máy ≠ ghép lời thật</b><span>lời giọng máy không do người thật nói, nên nặng hơn</span></div>
+      <div class="panel"><b>Đổi giọng AI ≠ giọng máy</b><span>một cái đổi cách nghe (02), một cái tạo lời mới (03)</span></div>
+      <div class="panel"><b>Khử ồn ứng dụng ≠ khử ồn một đoạn</b><span>khác phạm vi: vô hại và đáng ngờ</span></div>
+      <div class="panel"><b>Không gộp thành "thật / giả"</b><span>tổng quát quá mức, đúng lỗi của công cụ hiện có</span></div>
+    </div>
+    <div class="basis"><b>CƠ SỞ</b>Mỗi cặp có định nghĩa riêng trong Scope và có chỉ tiêu riêng trong Requirement ("không nhầm lời thật thành giọng máy", "không kết tội khử ồn vô hại"). Phạm vi áp dụng được khoanh bằng Constraint, Scope, Assumption, ra ngoài thì 04. Requirement đòi chấm trên người nói và công cụ chưa thấy khi học (kiểm tra trên tình huống mới, trang 16).</div>
+  </div>
+</section>
+
+</main>
+
+<!-- =========================== 6. TÓM LẠI =========================== -->
+<section class="close" id="ket">
+  <div class="wrap">
+    <div class="eyebrow">Phần 6 · Tóm lại</div>
+    <ol>
+      <li><b>Sáu mục</b><span>khoanh bài toán: 1 tệp vào, 1 nhãn và các dòng thao tác ra, 8 thao tác, có quyền từ chối.</span></li>
+      <li><b>Phân rã</b><span>cây bốn tầng: vấn đề ban đầu «có tin được tệp ghi âm này không» → 7 câu người nhận hỏi → 9 câu hỏi kỹ thuật → 36 vấn đề con; mỗi ô ghi nhận gì, trả ra gì, nên các ô nối được với nhau và tổng hợp lại thành Output gốc.</span></li>
+      <li><b>Trừu tượng hóa</b><span>giữ dấu vết sửa (loại, phạm vi, vị trí, mức độ); bỏ nội dung, người nói, công cụ, ý định; điều kiện ghi thành Constraint.</span></li>
+      <li><b>Nhận dạng mẫu</b><span>mỗi ô của cây là một bài toán đã có lời giải: cổng chất lượng, phân loại, tìm sự kiện, tìm điểm thay đổi, bất thường, bộ dò hai tầng.</span></li>
+      <li><b>Tổng quát hóa</b><span>5 loại về 2 trục, thành 8 thao tác; một khung đề xuất rồi kiểm chứng; mở rộng được sang công cụ, ngôn ngữ, thao tác và miền dữ liệu mới.</span></li>
+      <li><b>Thiết kế thuật toán</b><span>đo tệp một lần bằng mô hình nền đã huấn luyện sẵn; mỗi chuyên gia chấm điểm một nhóm thao tác; luật trong Scope suy ra nhãn từ điểm; hồ sơ ghi ảnh và dấu hiệu có số cho từng thao tác.</span></li>
+    </ol>
+    <p class="quote">"Trừu tượng hóa để hiểu đúng, tổng quát hóa để giải rộng."<small>AI201-5 · trang 23</small></p>
+    <p class="foot">VoiceAudit là công cụ sàng lọc sơ bộ, không phải kết luận giám định tư pháp. Nhãn 01 nghĩa là không thấy dấu vết, không phải chứng nhận bản thật. Nguồn: sáu mục đã nộp (VoiceAudit_6Muc), cây phân rã V2, bài giảng AI201-5.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var svg=document.getElementById('wave'); if(!svg) return;
+  var NS='http://www.w3.org/2000/svg', X0=24, X1=584, DUR=6, MID=70, H=46;
+  function x(t){return X0+(X1-X0)*t/DUR}
+  function el(n,a,parent){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(parent||svg).appendChild(e);return e}
+  var seed=7; function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+  var S0=1.13,S1=2.48;
+  // vùng không soi 0,3 s đầu và cuối
+  el('rect',{x:x(0),y:MID-H-6,width:x(.3)-x(0),height:2*H+12,fill:'var(--l04-soft)'});
+  el('rect',{x:x(DUR-.3),y:MID-H-6,width:x(DUR)-x(DUR-.3),height:2*H+12,fill:'var(--l04-soft)'});
+  // vùng giọng máy
+  el('rect',{x:x(S0),y:MID-H-6,width:x(S1)-x(S0),height:2*H+12,fill:'var(--block-soft)'});
+  // dạng sóng: các âm tiết; trong vùng giọng máy nhịp đều hơn
+  var syl=[]; var t=.35;
+  while(t<DUR-.35){var inS=t>S0&&t<S1;var len=inS?.17:.12+rnd()*.16;syl.push([t,len,inS?.78:.45+rnd()*.5]);t+=len+(inS?.05:.03+rnd()*.12);}
+  var g=el('g',{});
+  for(var px=X0;px<=X1;px+=3){
+    var tt=(px-X0)/(X1-X0)*DUR, a=.04+rnd()*.03, inS=tt>S0&&tt<S1;
+    for(var i=0;i<syl.length;i++){var s=syl[i];if(tt>=s[0]&&tt<=s[0]+s[1]){var p=(tt-s[0])/s[1];a=Math.max(a,s[2]*Math.sin(Math.PI*p)*(inS?.95:.7+rnd()*.3));}}
+    var h=Math.max(1,a*H);
+    el('rect',{x:px-1,y:MID-h,width:2,height:2*h,rx:1,fill:inS?'var(--block)':'var(--wave)'},g);
+  }
+  // mép đoạn
+  el('rect',{x:x(S0)-.75,y:MID-H-6,width:1.5,height:2*H+12,fill:'var(--block)'});
+  el('rect',{x:x(S1)-.75,y:MID-H-6,width:1.5,height:2*H+12,fill:'var(--block)'});
+  // dải khử ồn cả tệp
+  el('rect',{x:x(0),y:MID+H+10,width:x(DUR)-x(0),height:6,rx:3,fill:'var(--accent)',opacity:.7});
+  // trục thời gian
+  for(var s2=0;s2<=DUR;s2++){
+    el('rect',{x:x(s2)-.5,y:MID+H+34,width:1,height:5,fill:'var(--ink-3)'});
+    var tx=el('text',{x:x(s2),y:MID+H+52,'text-anchor':'middle','font-size':10,fill:'var(--ink-3)','font-family':'ui-monospace,Menlo,Consolas,monospace'});
+    tx.textContent=s2+' s';
+  }
+  function label(txt,xx,yy,col,anchor){var e=el('text',{x:xx,y:yy,'font-size':10.5,fill:col,'text-anchor':anchor||'start','font-family':'Avenir Next,Segoe UI,system-ui,sans-serif','font-weight':600});e.textContent=txt;}
+  label('giọng máy · một đoạn',x(S0)+4,MID-H+4,'var(--block)');
+  label('khử ồn · cả tệp',x(DUR),MID+H+28,'var(--accent)','end');
+  label('0,3 s không soi',x(0)+2,MID-H-9,'var(--ink-3)');
+})();
+</script>
+</body>
+</html>

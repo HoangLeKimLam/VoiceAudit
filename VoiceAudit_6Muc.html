@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>VoiceAudit — Input · Output · Requirement · Constraint · Scope · Assumption</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img,svg{max-width:100%;height:auto}
+button{font:inherit;color:inherit}
+</style><style>
+:root{
+  --ground:#EDF0F3; --surface:#FFFFFF; --surface-2:#F6F8F9;
+  --ink:#0E151B; --ink-2:#4B5966; --ink-3:#77848F;
+  --rule:#CBD4DC; --rule-2:#E2E8ED;
+  --accent:#A76508; --accent-2:#C98518; --accent-soft:#F6E8CE;
+  --verify:#0E6B62; --verify-soft:#DCEDEA;
+  --block:#93321F; --block-soft:#F6DED8;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --sans:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0B1015; --surface:#121A21; --surface-2:#0F161C;
+    --ink:#E2E9EF; --ink-2:#93A1AD; --ink-3:#6B7884;
+    --rule:#243039; --rule-2:#1B242C;
+    --accent:#E2A044; --accent-2:#F0B463; --accent-soft:#2A2013;
+    --verify:#45B3A5; --verify-soft:#102724;
+    --block:#D4735D; --block-soft:#2B1611;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B1015; --surface:#121A21; --surface-2:#0F161C;
+  --ink:#E2E9EF; --ink-2:#93A1AD; --ink-3:#6B7884;
+  --rule:#243039; --rule-2:#1B242C;
+  --accent:#E2A044; --accent-2:#F0B463; --accent-soft:#2A2013;
+  --verify:#45B3A5; --verify-soft:#102724;
+  --block:#D4735D; --block-soft:#2B1611;
+}
+:root[data-theme="light"]{
+  --ground:#EDF0F3; --surface:#FFFFFF; --surface-2:#F6F8F9;
+  --ink:#0E151B; --ink-2:#4B5966; --ink-3:#77848F;
+  --rule:#CBD4DC; --rule-2:#E2E8ED;
+  --accent:#A76508; --accent-2:#C98518; --accent-soft:#F6E8CE;
+  --verify:#0E6B62; --verify-soft:#DCEDEA;
+  --block:#93321F; --block-soft:#F6DED8;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin:0 auto;padding:0 28px 96px}
+
+.rail{position:fixed;left:0;top:0;bottom:0;width:22px;z-index:5;
+  border-right:1px solid var(--rule-2);background:var(--surface-2);
+  display:flex;flex-direction:column;justify-content:space-between;padding:14px 0}
+.rail i{display:block;height:1px;background:var(--rule);margin-left:8px;width:6px}
+.rail i:nth-child(5n+1){width:13px;margin-left:0;background:var(--accent)}
+@media(max-width:820px){.rail{display:none}}
+
+h1,h2,h3,h4{font-family:var(--mono);font-weight:700;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.95rem,4.9vw,3rem);letter-spacing:-.045em;line-height:1.05}
+h2{font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+h3{font-size:1.06rem;letter-spacing:-.02em;line-height:1.3}
+h4{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+p{margin:0 0 .85em;max-width:68ch}
+p:last-child{margin-bottom:0}
+strong{font-weight:650;color:var(--ink)}
+em{font-style:normal;font-family:var(--mono);font-size:.9em;color:var(--accent)}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);
+  border:1px solid var(--rule-2);padding:1px 5px;border-radius:2px;white-space:nowrap}
+
+header{padding:84px 0 40px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:22px;
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.eyebrow b{color:var(--accent);font-weight:700}
+.thesis{margin-top:24px;padding:18px 22px;background:var(--surface);
+  border-left:3px solid var(--accent)}
+.thesis p{font-size:1.06rem;line-height:1.5;color:var(--ink);max-width:64ch;margin:0}
+ol.q3{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+ol.q3 li{display:flex;gap:12px;align-items:flex-start}
+ol.q3 span{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--accent);
+  border:1px solid var(--accent);width:20px;height:20px;flex:0 0 20px;
+  display:flex;align-items:center;justify-content:center;margin-top:3px}
+ol.q3 div{min-width:0}
+ol.q3 b{display:block;font-size:1.04rem;line-height:1.4;color:var(--ink);font-weight:650}
+ol.q3 u{display:block;text-decoration:none;font-size:.87rem;line-height:1.5;
+  color:var(--ink-3);margin-top:3px;max-width:60ch}
+.thesis .why{margin-top:16px;padding-top:14px;border-top:1px solid var(--rule-2);
+  font-size:.92rem;line-height:1.55;color:var(--ink-2)}
+.thesis .why b{color:var(--ink)}
+.thesis .why em{color:var(--ink-3)}
+.lead{font-size:1.02rem;line-height:1.56;color:var(--ink-2);max-width:64ch;margin-top:20px}
+.lead b{color:var(--ink);font-weight:600}
+
+.verdicts{display:flex;flex-wrap:wrap;gap:0;margin-top:30px;
+  border:1px solid var(--rule);background:var(--surface)}
+.vd{flex:1 1 200px;padding:14px 16px;border-right:1px solid var(--rule-2);min-width:0}
+.vd:last-child{border-right:0}
+.vd b{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  color:var(--ink-3);margin-bottom:5px}
+.vd span{display:block;font-size:.88rem;line-height:1.4;color:var(--ink);font-weight:600}
+.vd u{display:block;text-decoration:none;font-size:.78rem;line-height:1.45;
+  color:var(--ink-3);margin-top:6px;font-weight:400}
+.vd.k2{background:var(--accent-soft)}
+.vd.k2 b{color:var(--accent)}
+.vd.k3{background:var(--block-soft)}
+.vd.k3 b{color:var(--block)}
+
+section{padding:58px 0;border-bottom:1px solid var(--rule-2)}
+.shead{display:flex;align-items:baseline;gap:18px;margin-bottom:28px;flex-wrap:wrap}
+.shead h2{white-space:nowrap}
+.shead .note{font-size:.88rem;color:var(--ink-3);max-width:54ch}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--rule);padding:22px 24px}
+.card.tint{background:var(--surface-2)}
+.card h3{margin-bottom:12px}
+.card > h4{margin-bottom:14px}
+
+ul.tick{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+ul.tick li{position:relative;padding-left:20px;font-size:.93rem;line-height:1.52;color:var(--ink-2)}
+ul.tick li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:1px;background:var(--accent)}
+ul.tick li b{color:var(--ink)}
+ul.tick.no li::before{background:var(--block)}
+
+.on{font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.08em;
+  color:var(--accent);border:1px solid var(--accent);padding:1px 5px;
+  display:inline-block;line-height:1.4;flex:0 0 auto}
+.omain{display:flex;flex-direction:column;gap:0;margin-top:18px;border-top:1px solid var(--rule-2)}
+.om{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--rule-2);align-items:flex-start}
+.om:last-child{border-bottom:0;padding-bottom:0}
+.om > div{min-width:0}
+.om b{display:block;font-size:1rem;font-weight:650;margin-bottom:4px;color:var(--ink)}
+.om span{display:block;font-size:.89rem;line-height:1.55;color:var(--ink-2)}
+.om span b{display:inline;font-size:inherit}
+.subs{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule)}
+.sub{background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+.sub .on{align-self:flex-start;color:var(--ink-3);border-color:var(--rule)}
+.sub > b{font-size:.95rem;font-weight:650;color:var(--ink);line-height:1.35}
+.sub > span{font-size:.85rem;line-height:1.52;color:var(--ink-2)}
+
+/* evidence on waveform */
+.ev{background:var(--surface);border:1px solid var(--rule);margin-bottom:18px}
+.ev-head{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;
+  padding:16px 22px 14px;border-bottom:1px solid var(--rule-2)}
+.ev-head .k{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  padding:2px 7px;white-space:nowrap;border:1px solid currentColor}
+.ev-head .k.a2{color:var(--accent)}
+.ev-head .k.a3{color:var(--block)}
+.ev-head h3{font-size:1rem}
+.ev-head .sub2{font-size:.85rem;color:var(--ink-2)}
+.ev-head .span{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin-left:auto;white-space:nowrap}
+.ev-stage{padding:50px 22px 14px;position:relative}
+.ev-wave{position:relative;height:108px}
+.bars{position:absolute;inset:0;display:flex;align-items:center;gap:1px}
+.bars i{flex:1 1 0;min-width:0;background:var(--ink-3);border-radius:2px;display:block}
+.bars i.inseg{background:var(--accent)}
+.hl{position:absolute;top:-10px;bottom:-10px;border:1px solid var(--accent);
+  background:var(--accent-soft);opacity:.55;pointer-events:none}
+.hl.wide{border-left:0;border-right:0}
+.mk{position:absolute;top:-14px;bottom:-14px;width:1px;background:var(--block)}
+.mk::before{content:"";position:absolute;top:0;left:-3px;width:7px;height:7px;
+  background:var(--block);clip-path:polygon(50% 100%,0 0,100% 0)}
+.evlab{position:absolute;font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;
+  background:var(--surface);border:1px solid var(--rule);padding:2px 6px;white-space:nowrap;
+  transform:translateX(-50%);top:-34px;color:var(--ink)}
+.evlab.blk{border-color:var(--block);color:var(--block)}
+.evlab.acc{border-color:var(--accent);color:var(--accent)}
+.ruler{display:flex;justify-content:space-between;padding:10px 22px 16px;
+  border-bottom:1px solid var(--rule-2);font-family:var(--mono);font-size:.62rem;
+  color:var(--ink-3);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.ev-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:1px;background:var(--rule-2)}
+.dc{background:var(--surface);padding:13px 18px}
+.dc b{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.dc span{display:block;font-family:var(--mono);font-size:.92rem;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1.4}
+.dc.wide{grid-column:1/-1}
+.dc.wide span{font-family:var(--sans);font-size:.88rem;color:var(--ink-2);line-height:1.5}
+.dc.wide span b{display:inline;font-family:var(--sans);font-size:inherit;
+  letter-spacing:0;text-transform:none;color:var(--ink)}
+.dc.hot span{color:var(--accent)}
+.dc.cool span{color:var(--verify)}
+.dc.bad span{color:var(--block)}
+
+/* stage panels */
+.stage{background:var(--surface);border:1px solid var(--rule);margin-bottom:16px;
+  display:grid;grid-template-columns:4px 1fr}
+.stage .stripe{background:var(--rule)}
+.stage.calc .stripe{background:var(--ink-3)}
+.stage.both .stripe{background:linear-gradient(var(--accent) 50%,var(--ink-3) 50%)}
+.stage .body{padding:20px 24px}
+.stage .top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.stage .k{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+  color:var(--ink-3);padding:2px 7px;border:1px solid var(--rule);white-space:nowrap}
+.stage .flow{font-family:var(--mono);font-size:.74rem;color:var(--accent);margin-left:auto;white-space:nowrap}
+.stage .q{font-size:.88rem;color:var(--ink-2);margin:0 0 14px;font-style:italic}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+.box h4{margin-bottom:9px}
+.box.calc h4{color:var(--ink-3)}
+.box.learn h4{color:var(--accent)}
+.outbar{margin-top:16px;padding:12px 16px;border-left:3px solid var(--accent);
+  background:var(--accent-soft);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.outbar .ol{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--accent);
+  white-space:nowrap;font-weight:700}
+.outbar .ov{font-size:.85rem;color:var(--ink-2);line-height:1.5}
+.outbar .ov b{color:var(--ink)}
+.box ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.box li{font-size:.875rem;line-height:1.48;color:var(--ink-2);padding-left:14px;position:relative}
+.box li::before{content:"·";position:absolute;left:3px;color:var(--ink-3);font-weight:700}
+.box li b{color:var(--ink)}
+.box.empty li{color:var(--ink-3);font-style:italic}
+
+.tw{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:540px}
+th{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);
+  background:var(--surface-2);white-space:nowrap;font-weight:600}
+td{padding:10px 14px;border-bottom:1px solid var(--rule-2);vertical-align:top;color:var(--ink-2)}
+tr:last-child td{border-bottom:0}
+td b{color:var(--ink);font-weight:600}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+td.key{background:var(--accent-soft)}
+td.key b{color:var(--accent)}
+td.c{text-align:center;font-family:var(--mono);font-weight:700}
+.tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;padding:2px 6px;
+  border:1px solid currentColor;white-space:nowrap;display:inline-block}
+.tag.new{color:var(--accent)}
+.tag.inh{color:var(--verify)}
+
+/* signatures */
+.sigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:18px}
+.sig{background:var(--surface);border:1px solid var(--rule);padding:18px 18px 16px}
+.sig h3{font-size:.88rem;margin-bottom:3px}
+.sig .cap{font-size:.78rem;color:var(--ink-3);margin-bottom:14px;line-height:1.45}
+.hm{display:flex;flex-direction:column;gap:7px}
+.hmg{display:flex;flex-direction:column;gap:2px}
+.hmg .gl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--ink-3);margin-bottom:2px}
+.hmr{display:grid;grid-template-columns:20px 1fr;gap:5px;align-items:center}
+.hmr .rl{font-family:var(--mono);font-size:.55rem;color:var(--ink-3);text-align:right}
+.hmr .cells{display:grid;grid-template-columns:repeat(36,1fr);gap:1px;height:7px}
+.hmr .cells i{background:var(--accent);display:block}
+.sig .read{margin-top:13px;padding-top:11px;border-top:1px solid var(--rule-2);
+  font-family:var(--mono);font-size:.68rem;line-height:1.5;color:var(--ink-2)}
+.sig .read b{color:var(--accent)}
+
+pre.tree{font-family:var(--mono);font-size:.74rem;line-height:1.5;margin:0;
+  background:var(--surface);border:1px solid var(--rule);padding:22px;
+  overflow-x:auto;color:var(--ink-2);white-space:pre}
+pre.tree b{color:var(--accent);font-weight:700}
+
+/* org-chart tree */
+.otree-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--rule);padding:32px 20px}
+.otree,.otree ul{display:flex;justify-content:center;padding-top:26px;position:relative}
+.otree{padding-top:0}
+.otree li{list-style:none;position:relative;padding:26px 10px 0;display:flex;flex-direction:column;align-items:center}
+.otree li::before,.otree li::after{content:'';position:absolute;top:0;right:50%;
+  border-top:1px solid var(--rule-2);width:50%;height:26px}
+.otree li::after{right:auto;left:50%;border-left:1px solid var(--rule-2)}
+.otree li:only-child{padding-top:0}
+.otree li:only-child::before,.otree li:only-child::after{display:none}
+.otree>li{padding-top:0}
+.otree>li::before,.otree>li::after{display:none}
+.otree li:first-child::before,.otree li:last-child::after{border:0}
+.otree ul ul::before{content:'';position:absolute;top:0;left:50%;
+  border-left:1px solid var(--rule-2);width:0;height:26px}
+.otree .node{border:1px solid var(--rule);background:var(--surface-2);padding:9px 14px;
+  font-family:var(--mono);white-space:nowrap;text-align:center;min-width:88px}
+.otree .node .t{font-size:.62rem;letter-spacing:.08em;color:var(--ink-3);display:block;margin-bottom:2px}
+.otree .node .n{font-size:.8rem;font-weight:700;color:var(--ink)}
+.otree .node .a{font-size:.6rem;color:var(--accent);display:block;margin-top:3px}
+.otree .node.root{background:var(--accent-soft);border-color:var(--accent)}
+.otree .node.root .n{color:var(--accent)}
+.otree .node.b .n{color:var(--verify)}
+.otree .node.gate{border-color:var(--accent);border-width:2px}
+.otree .node.leaf{padding:5px 9px;min-width:auto;background:var(--surface)}
+.otree .node.leaf .n{font-size:.65rem;font-weight:600;color:var(--ink-2)}
+.otree .node.leaf .t{font-size:.55rem}
+.otree .node.leaf.m{border-color:var(--accent)}
+.otree .node.leaf.m .n{color:var(--accent)}
+pre.tree u{color:var(--verify);text-decoration:none}
+pre.tree s{color:var(--block);text-decoration:none}
+
+.binds{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);background:var(--surface)}
+.bind{display:grid;grid-template-columns:124px 1fr;border-bottom:1px solid var(--rule-2)}
+.bind:last-child{border-bottom:0}
+.bind .lhs{font-family:var(--mono);font-size:.69rem;letter-spacing:.06em;color:var(--ink-3);
+  padding:13px 14px;border-right:1px solid var(--rule-2);background:var(--surface-2);
+  display:flex;align-items:center}
+.bind .rhs{padding:13px 18px;font-size:.9rem;line-height:1.5;color:var(--ink-2)}
+.bind .rhs b{color:var(--ink)}
+.bind.hard .lhs{color:var(--block);background:var(--block-soft)}
+
+.call{border-left:3px solid var(--accent);background:var(--surface);padding:18px 22px;margin:26px 0 0}
+.call p{font-size:.95rem;color:var(--ink-2)}
+.call p b{color:var(--ink)}
+.call.hard{border-left-color:var(--block)}
+
+footer{padding:44px 0 0;font-family:var(--mono);font-size:.72rem;
+  color:var(--ink-3);letter-spacing:.06em;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* v4 — trạng thái đo được */
+:root{--warn:var(--accent)}
+.pill{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.06em;
+  padding:2px 7px;border:1px solid currentColor;display:inline-block;white-space:nowrap;line-height:1.5}
+.pill.ok{color:var(--verify)}
+.pill.no{color:var(--block)}
+.pill.part{color:var(--accent)}
+.pill.na{color:var(--ink-3);border-style:dashed}
+td.ok{background:var(--verify-soft)}
+td.no{background:var(--block-soft)}
+td.dim{color:var(--ink-3)}
+.src{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);letter-spacing:.02em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0;
+  border:1px solid var(--rule);background:var(--surface);margin-top:22px}
+.kpi{padding:14px 16px;border-right:1px solid var(--rule-2);border-bottom:1px solid var(--rule-2)}
+.kpi b{display:block;font-family:var(--mono);font-size:1.28rem;letter-spacing:-.03em;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi span{display:block;font-size:.78rem;line-height:1.4;color:var(--ink-3);margin-top:4px}
+.kpi.ok b{color:var(--verify)}
+.kpi.no b{color:var(--block)}
+.kpi.part b{color:var(--accent)}
+.sig .hmr{grid-template-columns:52px 1fr}
+.sig .hmr .rl{font-size:.56rem;white-space:nowrap}
+.vd u b{display:inline;font-family:inherit;font-size:inherit;letter-spacing:0;
+  color:var(--ink);margin:0;font-weight:650}
+.om b .pill{display:inline-block;margin:0 0 0 8px;font-size:.6rem;line-height:1.5;vertical-align:1px}
+table.crit td:first-child{white-space:normal;overflow-wrap:anywhere;min-width:150px}
+table.crit td:nth-child(2){min-width:220px}
+table.crit td:last-child{white-space:normal;min-width:210px}
+table.req td:first-child{min-width:150px}
+table.req td:nth-child(2){min-width:240px}
+table.req td.num{white-space:normal;min-width:92px}
+.hmr .cells i.gt{box-shadow:inset 0 -2px 0 var(--ink)}
+.hmr .cells i.neg{background:var(--verify)}
+</style><style>
+#themebtn{position:fixed;top:14px;right:14px;z-index:99;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;padding:8px 13px;cursor:pointer;background:var(--surface);color:var(--ink-2);border:1px solid var(--rule)}
+#themebtn:hover{border-color:var(--accent);color:var(--accent)}
+#themebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media print{#themebtn{display:none}}
+</style>
+<style>
+.wrap{max-width:1140px}
+#constraint p{max-width:none}
+table.req td:nth-child(2){min-width:200px}
+table.req td.num{min-width:76px}
+header{padding:64px 0 30px}
+header h1{font-size:clamp(1.7rem,4vw,2.4rem)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.toc a{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  color:var(--ink-2);border:1px solid var(--rule);background:var(--surface);padding:6px 11px}
+.toc a:hover{border-color:var(--accent);color:var(--accent)}
+.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{padding:44px 0}
+.shead h2{font-size:.82rem}
+</style>
+</head>
+<body>
+<button id="themebtn" type="button">THEME</button>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow"><span>Đồ án · Giám định âm thanh</span><span>—</span><b>VoiceAudit</b><span>—</span><span>Định nghĩa bài toán</span></div>
+  <h1>Kiểm định bản ghi âm<br>bị chỉnh sửa hậu kỳ hoặc cắt ghép</h1>
+  <div class="thesis" style="margin-top:20px"><p style="font-size:.93rem;color:var(--ink-2)">Giúp người nhận một file ghi âm biết file đó <b>có bị chỉnh sửa không</b>,
+      <b>sửa kiểu gì, ở đoạn nào</b>, và thao tác đó <b>vô hại hay làm sai lệch</b> — trước khi dùng file làm bằng chứng
+      hoặc đưa đi giám định.</p></div>
+  <nav class="toc" aria-label="Các mục">
+    <a href="#context">Bối cảnh</a><a href="#input">1 · Input</a><a href="#output">2 · Output</a><a href="#requirement">3 · Requirement</a>
+    <a href="#constraint">4 · Constraint</a><a href="#scope">5 · Scope</a><a href="#assumption">6 · Assumption</a>
+  </nav>
+</header>
+
+<section id="context">
+  <div class="shead"><h2>Bối cảnh và lý do</h2></div>
+<div class="card"><p style="font-size:.93rem;color:var(--ink-2)">Ghi âm cuộc gọi, tin nhắn thoại và cuộc họp ngày càng được đưa ra làm bằng chứng,
+      trong khi công cụ khử ồn, đổi giọng, cắt ghép và nhái giọng bằng AI nay miễn phí và ai cũng dùng được.
+      Công cụ phát hiện hiện có chủ yếu trả lời “thật hay giả” cho cả tệp, nên coi mọi chỉnh sửa là giả mạo — kết tội cả người chỉ lọc tiếng ồn cho dễ nghe —
+      và phần lớn không chỉ ra đoạn nào bị sửa.
+      Người nhận tệp cần biết tệp bị làm gì, ở đoạn nào, có thao tác nào có thể làm thay đổi chuỗi lời nói hay không, trước khi dựa vào nó hoặc tốn chi phí đưa đi giám định.
+      Với tiếng Việt, công cụ và dữ liệu công khai cho việc này còn rất ít.
+      Vì vậy đề tài xây một hệ thống sàng lọc chạy trên máy cá nhân: phân biệt chỉnh sửa vô hại với chỉnh sửa làm sai lệch,
+      và khoanh đúng đoạn bị sửa kèm bằng chứng đo được.</p></div>
+</section>
+
+<section id="input">
+  <div class="shead"><h2>1 · Input</h2></div>
+<div class="card"><ul class="tick">
+      <li><b>01 file ghi âm</b> có tiếng người nói — ghi bằng điện thoại, máy ghi âm hoặc phần mềm họp trực tuyến, hoặc nhận lại qua ứng dụng nhắn tin.</li>
+    </ul></div>
+</section>
+
+<section id="output">
+  <div class="shead"><h2>2 · Output</h2><div class="note">Output chính trước, output phụ sau.</div></div>
+<div class="card" style="border-color:var(--accent)"><div class="tw">
+      <table>
+        <thead><tr><th>Phần</th><th>Khi nào có · dạng</th><th>Giá trị</th></tr></thead>
+        <tbody>
+          <tr><td class="key" colspan="3"><b>OUTPUT CHÍNH</b></td></tr>
+          <tr><td><b>Nhãn</b></td><td>luôn có khi tệp được nhận · một nhãn cho cả tệp</td>
+              <td><b>01</b> Không chỉnh sửa · <b>02</b> Chỉnh sửa hậu kỳ · <b>03</b> Ghép hoặc chèn đoạn · <b>04</b> Không đủ cơ sở — cách ra nhãn ở Scope</td></tr>
+          <tr><td><b>Lý do</b></td><td>chỉ khi nhãn 04 · danh sách câu</td>
+              <td>mọi lý do: điều kiện Constraint bị vi phạm, hoặc vì sao chưa đủ chắc — khi đó kèm đoạn khả nghi (nếu có) để nghe lại</td></tr>
+          <tr><td><b>Thao tác</b></td><td>chỉ khi nhãn 02 hoặc 03 · mỗi thao tác tìm thấy một dòng</td>
+              <td><b>loại</b>: khử ồn · đổi giọng · ghép lời thật · xoá lời · giọng máy<br>
+                <b>phạm vi</b>: cả file / một đoạn<br>
+                <b>mốc</b> bắt đầu – kết thúc, dạng phút:giây,phần trăm giây (cả file: từ đầu tới hết tệp)<br>
+                <b>mức độ</b>: vô hại · đáng ngờ · sai lệch · sai lệch nặng<br>
+                <b>kênh</b>: trái / phải — chỉ khi hai kênh được phân tích riêng</td></tr>
+          <tr><td><b>Ảnh</b></td><td>mỗi thao tác một ảnh</td>
+              <td>dạng sóng và phổ của tệp, tô vùng của thao tác (cả file: tô toàn bộ; xoá lời: vùng ≤ 1 s chứa mối nối)</td></tr>
+          <tr><td><b>Giải thích</b></td><td>mỗi thao tác một đoạn tiếng Việt</td>
+              <td>các dấu hiệu lệch nhiều nhất (ít nhất 2), mỗi dấu hiệu kèm số: cao hơn hoặc thấp hơn bao nhiêu phần trăm tệp trong <b>kho tham chiếu</b>*</td></tr>
+          <tr><td class="key" colspan="3"><b>OUTPUT PHỤ</b></td></tr>
+          <tr><td><b>Cảnh báo</b></td><td>danh sách, có thể rỗng</td>
+              <td>nén mạnh · tiếng ồn cao · cắt đỉnh · có đoạn mất tín hiệu · phòng vang · kiểu nói ngoài phạm vi · ngôn ngữ khác ·
+                nhiều người nói · nói chồng · có đoạn nghi 03 chưa đủ chắc · có thể còn chỗ sửa khác · 0,3 s đầu và cuối không được soi</td></tr>
+          <tr><td><b>Bảng mốc</b></td><td>bảng</td><td>mỗi thao tác: kênh, loại, mốc dạng chữ và dạng giây — để tua tới nghe lại hoặc trích dẫn</td></tr>
+          <tr><td><b>Điểm và ngưỡng</b></td><td>bảng</td><td>điểm và ngưỡng của từng bước dẫn tới nhãn — để chuyên viên kiểm lại</td></tr>
+          <tr><td><b>Bảng số đo</b></td><td>bảng</td><td>mỗi dấu hiệu: giá trị, trung vị và vị trí phần trăm trong kho tham chiếu</td></tr>
+          <tr><td><b>Báo cáo PDF</b></td><td>tệp PDF</td>
+              <td>gộp mọi phần trên; mã băm tệp, phiên bản mô hình và ngưỡng, thời điểm chạy; <b>tuyên bố giới hạn</b>**</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src" style="margin-top:8px">* Kho tham chiếu: 160 tệp không bị sửa của bộ dữ liệu (giọng đọc VIVOS qua phòng và tiếng ồn mô phỏng). Con số phần trăm là mức bất thường so với kho này, không phải xác suất tệp bị sửa.
+      ** Tuyên bố giới hạn: sàng lọc, không phải giám định tư pháp; 01 nghĩa là không thấy dấu vết, không phải chứng nhận bản thật;
+      các điều kiện ở nhóm “không tự kiểm được” của Constraint và mọi Assumption; đoạn đổi giọng có thể chứa lời mới — hệ thống không kiểm nội dung.</p>
+    <div class="call" style="margin-top:14px">
+      <p><b>Ví dụ.</b> Input: một file ghi âm dài 6 giây. Output chính: nhãn <b>03</b>, hai thao tác —
+      (1) <b>giọng máy · một đoạn · 00:01,13 – 00:02,48 · sai lệch nặng</b>: <em>“chỗ nối lệch hơn 98 % chỗ nối tự nhiên trong kho tham chiếu;
+      độ giống giọng tổng hợp trong đoạn cao hơn 99 %”</em>;
+      (2) <b>khử ồn · cả file · 00:00,00 – 00:06,00 · vô hại</b>: <em>“tiếng nền thấp hơn 99 % kho tham chiếu; nền giữa các câu phẳng hơn 97 %”</em>.
+      Mỗi thao tác một ảnh. Output phụ: cảnh báo <em>“0,3 s đầu và cuối không được soi”</em>; bảng mốc; điểm và ngưỡng; bảng số đo; báo cáo PDF.</p>
+    </div></div>
+</section>
+
+<section id="requirement">
+  <div class="shead"><h2>3 · Requirement</h2><div class="note">Chỉ tiêu chốt của hệ thống đầy đủ và điều kiện chấm.</div></div>
+<div class="tw">
+    <table class="req">
+      <thead><tr><th>Yêu cầu</th><th>Công thức</th><th>Chỉ tiêu chốt</th></tr></thead>
+      <tbody>
+        <tr><td class="key" colspan="3"><b>A · PHÁT HIỆN ĐÚNG</b></td></tr>
+        <tr><td><b>1 · Phân loại đúng</b></td><td>macro-F1 của 3 nhãn 01 · 02 · 03; tệp ra 04 tính là bỏ sót nhãn đúng</td><td class="num key"><b>≥ 0,86</b></td></tr>
+        <tr><td><b>2 · Không bỏ sót tệp bị sửa</b></td><td>tệp bị sửa được gắn 02 hoặc 03 / tệp bị sửa</td><td class="num key"><b>≥ 0,90</b></td></tr>
+        <tr><td><b>3 · Báo “có sửa” đáng tin</b></td><td>tệp gắn 02 hoặc 03 mà thật sự bị sửa / tệp gắn 02 hoặc 03</td><td class="num key"><b>≥ 0,97</b></td></tr>
+        <tr><td><b>4 · Không vu oan tệp thật</b></td><td>tệp thật bị gắn 02 hoặc 03 / tệp thật <span style="color:var(--ink-3)">(tệp thật: không có thao tác nào trong 8 thao tác)</span></td><td class="num key"><b>≤ 3 %</b></td></tr>
+        <tr><td><b>5 · Không kết tội khử ồn vô hại</b></td><td>tệp chỉ khử ồn cả file không bị gắn đổi giọng hay 03 / tệp chỉ khử ồn cả file</td><td class="num key"><b>≥ 92 %</b></td></tr>
+        <tr><td><b>6 · Không nhầm lời thật thành giọng máy</b></td><td>tệp ghép lời thật bị gắn giọng máy / tệp ghép lời thật</td><td class="num key"><b>≤ 5 %</b></td></tr>
+        <tr><td><b>7a · Bắt được ghép lời thật</b></td><td>F1 của loại ghép lời thật</td><td class="num key"><b>≥ 0,80</b></td></tr>
+        <tr><td><b>7b · Bắt được xoá lời</b></td><td>F1 của loại xoá lời <span style="color:var(--ink-3)">(đúng khi mối nối cách vùng khoanh ≤ 500 ms)</span></td><td class="num key"><b>≥ 0,65</b></td></tr>
+        <tr><td><b>8a · Bắt được giọng máy một đoạn</b></td><td>F1 của loại giọng máy một đoạn</td><td class="num key"><b>≥ 0,86</b></td></tr>
+        <tr><td><b>8b · Bắt được giọng máy cả file</b></td><td>tệp giọng máy cả file được gắn giọng máy cả file / tệp giọng máy cả file</td><td class="num key"><b>≥ 0,90</b></td></tr>
+        <tr><td><b>9 · Từ chối đúng mức</b></td><td>tệp ra 04 / tệp được chấm</td><td class="num key"><b>≤ 8 %</b></td></tr>
+        <tr><td class="key" colspan="3"><b>B · ĐỊNH VỊ ĐÚNG CHỖ</b></td></tr>
+        <tr><td><b>10 · Mốc thời gian chính xác</b></td><td>đoạn sửa thật có một dòng cùng loại khoanh, hai mép lệch ≤ 500 ms / đoạn sửa thật <span style="color:var(--ink-3)">(xoá lời: mối nối cách vùng khoanh ≤ 500 ms)</span></td><td class="num key"><b>≥ 78 %</b></td></tr>
+        <tr><td><b>11 · Vùng khoanh trùng chỗ sửa</b></td><td>IoU trung bình giữa vùng khoanh và chỗ sửa thật, trên dòng đúng loại <span style="color:var(--ink-3)">(không tính xoá lời — chỗ sửa chỉ là một điểm)</span></td><td class="num key"><b>≥ 0,80</b></td></tr>
+        <tr><td class="key" colspan="3"><b>C · BẰNG CHỨNG</b></td></tr>
+        <tr><td><b>12 · Bằng chứng đầy đủ</b></td><td>dòng thao tác có mốc, ảnh và ≥ 2 dấu hiệu có số / dòng thao tác</td><td class="num key"><b>100 %</b></td></tr>
+        <tr><td><b>13 · Bằng chứng dễ hiểu</b></td><td>lượt đoán đúng loại thao tác (1 trong 5) khi chỉ xem ảnh, không thấy nhãn / tổng lượt đoán <span style="color:var(--ink-3)">(≥ 3 người chấm ngoài nhóm)</span></td><td class="num key"><b>≥ 70 %</b></td></tr>
+        <tr><td><b>14 · Hồ sơ không tự mâu thuẫn</b></td><td>hồ sơ có nhãn và mức độ đúng luật ở Scope, mọi mốc nằm trong tệp / hồ sơ</td><td class="num key"><b>100 %</b></td></tr>
+        <tr><td class="key" colspan="3"><b>D · TỐC ĐỘ</b></td></tr>
+        <tr><td><b>15 · Xử lý kịp thời</b></td><td>thời gian xử lý ÷ độ dài âm thanh, trên máy CPU 4 nhân · RAM 8 GB · không GPU <span style="color:var(--ink-3)">(không tính tải tệp và nạp mô hình; 5 phút âm thanh ≤ 3 phút)</span></td><td class="num key"><b>≤ 0,6</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 style="margin:24px 0 10px">Điều kiện chấm</h4>
+  <ul class="tick">
+    <li>Chỉ chấm tệp không bị Constraint chuyển 04 hay từ chối — tệp chỉ bị cảnh báo vẫn chấm; báo số và tỉ lệ tệp bị loại theo từng lý do.</li>
+    <li>Người nói ở tập chấm không có trong tập học; chỉ tiêu chốt chấm <b>một lần</b> trên tập khoá chưa dùng khi phát triển.</li>
+    <li>Tập chấm có: tệp nén theo 8 cấu hình (MP3, AAC, Opus, AMR-WB, chuyển tiếp nhiều lần) — chỉ tiêu tính trên cấu hình ≥ 24 kbps, còn lại báo riêng;
+      ≥ 3 bộ khử ồn, ≥ 2 bộ đổi giọng, ≥ 2 bộ sinh giọng, mỗi loại ít nhất một bộ không có khi học;
+      tệp xoá lời và tệp giọng máy cả file; sửa ngắn (1–3 tiếng) và sửa dài (tới một câu); tệp nhiều người nói; một phần ghi âm thật (ví dụ bản gốc của bộ MIST tiếng Việt).</li>
+    <li>Báo riêng theo ngôn ngữ (Việt / Anh), độ dài tệp (≤ 20 s / dài hơn), độ dài chỗ sửa (1–3 tiếng / dài hơn), số người nói (1 / 2–4) và tệp hai kênh; mỗi chỉ tiêu kèm khoảng tin cậy 95 %;
+      báo thêm tỉ lệ tệp thật ra 01 và tỉ lệ tệp có thao tác 03 được gắn đúng 03.</li>
+  </ul>
+</section>
+
+<section id="constraint">
+  <div class="shead"><h2>4 · Constraint</h2></div>
+<div class="tw">
+    <table>
+      <thead><tr><th>Ràng buộc</th><th>Điều kiện</th><th>Kiểm bằng</th><th>Không đạt thì</th></tr></thead>
+      <tbody>
+        <tr><td class="key" colspan="4"><b>TỆP</b></td></tr>
+        <tr><td><b>Số tệp</b></td><td>đúng 1 tệp mỗi lần</td><td>yêu cầu gửi</td><td>từ chối nhận</td></tr>
+        <tr><td><b>Dung lượng</b></td><td>≤ 250 MB</td><td>thông tin tệp</td><td>từ chối nhận</td></tr>
+        <tr><td><b>Định dạng</b></td><td>.wav · .flac · .mp3 · .m4a · .aac · .ogg · .opus · .amr; giải mã được, không khoá DRM</td><td>thông tin tệp</td><td>04 · “không đọc được tệp”</td></tr>
+        <tr><td><b>Độ sâu bit</b> <span class="src">không nén</span></td><td>≥ 16-bit</td><td>thông tin tệp</td><td>04 · “độ sâu bit dưới 16”</td></tr>
+        <tr><td><b>Tốc độ bit</b> <span class="src">nén</span></td><td>≥ 24 kbps, áp cho mọi mã hoá nén, theo tốc độ bit khai trong tệp</td><td>thông tin tệp</td><td>cảnh báo “nén mạnh”</td></tr>
+        <tr><td><b>Tần số lấy mẫu</b></td><td>≥ 16 kHz; cao hơn thì hạ về 16 kHz</td><td>thông tin tệp</td><td>04 · “tần số quá thấp”</td></tr>
+        <tr><td><b>Độ dài</b></td><td>3 giây – 10 phút</td><td>thông tin tệp</td><td>04 · “độ dài ngoài 3 giây – 10 phút”</td></tr>
+        <tr><td><b>Số kênh</b></td><td>1–2</td><td>thông tin tệp</td><td>04 · “quá 2 kênh”</td></tr>
+        <tr><td><b>Hai kênh</b></td><td>xét lần lượt: kênh có dưới 2 s tiếng nói ⟹ bỏ kênh đó · giống hệt nhau (tương quan &gt; 0,999) ⟹ gộp một ·
+            hai micro cùng ghi một cảnh (tương quan ≥ 0,3 sau khi căn lệch ≤ 50 ms) ⟹ phân tích từng kênh</td><td>đo tín hiệu</td>
+            <td>hai nguồn riêng, mỗi người một kênh (tương quan &lt; 0,3) ⟹ 04 · “hai kênh là hai nguồn riêng — gửi bản một kênh”</td></tr>
+
+        <tr><td class="key" colspan="4"><b>TÍN HIỆU</b></td></tr>
+        <tr><td><b>Dải tần thực</b></td><td>có năng lượng tới ≥ 6 kHz</td><td>đo phổ</td><td>04 · “băng hẹp”</td></tr>
+        <tr><td><b>Âm lượng</b></td><td>mức tiếng nói trung bình ≥ −40 dBFS</td><td>đo tín hiệu</td><td>04 · “quá nhỏ”</td></tr>
+        <tr><td><b>Cắt đỉnh</b></td><td>≤ 1 % số mẫu chạm mức tối đa</td><td>đo tín hiệu</td><td>1–5 % ⟹ cảnh báo “cắt đỉnh” · &gt; 5 % ⟹ 04 · “cắt đỉnh nặng”</td></tr>
+        <tr><td><b>Mất tín hiệu</b></td><td>không có đoạn toàn số 0 dài &gt; 0,1 s giữa lời nói</td><td>đo tín hiệu</td><td>cảnh báo “có đoạn mất tín hiệu”, ghi mốc</td></tr>
+        <tr><td><b>Tiếng nói so với tiếng ồn</b></td><td>≥ 10 dB</td><td>mô hình ước lượng SNR</td><td>&lt; 10 dB ⟹ 04 · “ồn quá” · 10–15 dB ⟹ cảnh báo “tiếng ồn cao”</td></tr>
+        <tr><td><b>Âm không phải tiếng nói</b></td><td>nhạc, TV, loa, tiếng động ≤ 10 % năng lượng</td><td>mô hình phân loại âm thanh</td><td>04 · “nền che tiếng nói”</td></tr>
+        <tr><td><b>Thời lượng có tiếng nói</b></td><td>≥ 2 s và ≥ 30 % độ dài tệp (tệp hai kênh: tính trên kênh nhiều tiếng nói hơn)</td><td>mô hình nhận dạng tiếng nói</td><td>04 · “quá ít tiếng nói”</td></tr>
+
+        <tr><td class="key" colspan="4"><b>NGƯỜI NÓI VÀ PHÒNG</b></td></tr>
+        <tr><td><b>Loại âm thanh</b></td><td>ghi âm lời nói — không phải podcast, phát thanh, sách nói, nhạc</td><td>mô hình phân loại âm thanh</td><td>04 · “không phải ghi âm lời nói”</td></tr>
+        <tr><td><b>Kiểu nói</b></td><td>người lớn nói bình thường — không hát, thì thầm, la hét</td><td>mô hình phân loại âm thanh</td><td>cảnh báo “kiểu nói ngoài phạm vi”</td></tr>
+        <tr><td><b>Ngôn ngữ</b></td><td>tiếng Việt, tiếng Anh</td><td>mô hình nhận dạng ngôn ngữ</td><td>cảnh báo “ngôn ngữ khác”</td></tr>
+        <tr><td><b>Số người nói</b></td><td>1–4</td><td>mô hình tách người nói</td><td>2–4 ⟹ cảnh báo “nhiều người nói” · &gt; 4 ⟹ 04 · “quá 4 người nói”</td></tr>
+        <tr><td><b>Nói chồng</b></td><td>≤ 10 % thời lượng có tiếng nói</td><td>mô hình tách người nói</td><td>cảnh báo “nói chồng”</td></tr>
+        <tr><td><b>Phòng</b></td><td>độ vang RT60 ≤ 1,0 s</td><td>mô hình ước lượng độ vang</td><td>cảnh báo “phòng vang”</td></tr>
+
+        <tr><td class="key" colspan="4"><b>VÙNG SOI</b></td></tr>
+        <tr><td><b>Đầu và cuối tệp</b></td><td>chỉ soi từ 0,3 s sau đầu tới 0,3 s trước cuối</td><td>—</td><td>luôn cảnh báo “0,3 s đầu và cuối không được soi”</td></tr>
+        <tr><td><b>Số chỗ sửa</b></td><td>tối đa 2 đoạn mỗi khúc 16 s (tệp chia thành khúc 16 s, chồng nhau 2 s), cộng các thao tác cả file</td><td>—</td><td>cảnh báo “có thể còn chỗ sửa khác”</td></tr>
+
+        <tr><td class="key" colspan="4"><b>KHÔNG TỰ KIỂM ĐƯỢC — ghi vào tuyên bố giới hạn</b></td></tr>
+        <tr><td><b>Cách ghi</b></td><td>một lần ghi liên tục, một thiết bị, người nói cách micro ≤ 2 m</td><td>không kiểm được</td><td>chỗ tạm dừng hoặc đổi thiết bị có thể bị báo nhầm là 03</td></tr>
+        <tr><td><b>Tốc độ phát</b></td><td>tốc độ gốc, lệch ≤ ± 5 %</td><td>không kiểm được</td><td>lệch 5–12 %: không cảnh báo · lệch &gt; 12 % (≈ 2 nửa cung, bằng ngưỡng đổi giọng) có thể bị báo là đổi giọng cả file — mốc suy ra từ thiết kế, chưa kiểm chứng</td></tr>
+
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="scope">
+  <div class="shead"><h2>5 · Scope</h2></div>
+<div class="card tint"><ul class="tick">
+    <li><b>Tệp nhận phân tích</b>: ghi âm cuộc gọi băng rộng (gọi qua ứng dụng, HD Voice) ghi chung một kênh, tin nhắn thoại,
+      ghi âm cuộc họp hoặc buổi học, phỏng vấn, lời khai — tệp gốc hoặc tệp đã gửi qua ứng dụng nhắn tin.</li>
+    <li><b>Hệ thống chỉ trả lời</b>: tệp có dấu vết của 5 loại thao tác dưới đây không, ở đâu, mức độ nào.
+      Nguyên tắc chia nhãn: <b>02</b> = xử lý lên lời có sẵn, chỉ đổi cách nghe;
+      <b>03</b> = sửa chuỗi lời — <b>chèn</b>, <b>xoá</b>, hoặc <b>thay</b> (xoá rồi chèn), bằng giọng người thật hoặc giọng AI tạo, hoặc cả file là giọng AI.
+      Nhãn dựa trên <b>dấu vết kỹ thuật</b> của thao tác, không dựa trên nội dung lời.</li>
+  </ul>
+  <div class="tw" style="margin-top:12px">
+    <table>
+      <thead><tr><th>Loại</th><th>Định nghĩa</th><th>Phạm vi</th><th>Mức độ</th><th>Nhãn</th></tr></thead>
+      <tbody>
+        <tr><td><b>Khử ồn</b></td><td>giảm tiếng nền hoặc tiếng vang bằng bộ lọc tự phân định đâu là nhiễu, đâu là tiếng nói</td><td>cả file · một đoạn</td><td>cả file: vô hại · một đoạn: đáng ngờ</td><td class="num">02</td></tr>
+        <tr><td><b>Đổi giọng</b></td><td>dịch cao độ từ 2 nửa cung trở lên, hoặc chuyển sang giọng người khác bằng công cụ đổi giọng <span style="color:var(--ink-3)">— đoạn đổi giọng vẫn báo 02 kể cả khi lời trong đoạn là lời mới do người khác nói; hệ thống không kiểm nội dung, người dùng nghe lại đoạn được khoanh</span></td><td>cả file · một đoạn</td><td>sai lệch</td><td class="num">02</td></tr>
+        <tr><td><b>Ghép lời thật</b></td><td>chèn hoặc thay lời bằng <b>giọng người thật</b> lấy từ chỗ khác — cùng bản ghi hoặc bản ghi khác; lời chèn trùng hoặc khác lời gốc; từ 1 tiếng (âm tiết) tới một câu, mỗi đoạn chèn ≤ 5 s</td><td>một đoạn</td><td>sai lệch</td><td class="num">03</td></tr>
+        <tr><td><b>Xoá lời</b></td><td>cắt bỏ lời, từ 1 tiếng tới một câu, rồi nối hai phần còn lại</td><td>một đoạn (vùng ≤ 1 s chứa mối nối)</td><td>sai lệch</td><td class="num">03</td></tr>
+        <tr><td><b>Giọng máy</b></td><td>chèn hoặc thay lời bằng <b>giọng do AI tạo</b> (thường nhái giọng người nói), từ 1 tiếng tới một câu, mỗi đoạn ≤ 5 s; hoặc cả file là giọng AI</td><td>một đoạn · cả file</td><td>sai lệch nặng</td><td class="num">03</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="tick" style="margin-top:12px">
+    <li><b>Phạm vi</b>: <i>cả file</i> = phủ toàn tệp; <i>một đoạn</i> = một khoảng liên tục ≤ 50 % độ dài tệp. Tính theo phạm vi, 5 loại thành <b>8 thao tác</b>.</li>
+    <li><b>Mức độ</b> là mức rủi ro gán cố định theo loại thao tác — không đánh giá nội dung lời hay ý định người sửa.</li>
+    <li><b>Một thao tác được báo khi</b>: cả file — xác suất của loại đó ≥ 0,6; một đoạn — điểm vượt ngưỡng riêng của loại đó
+      (ngưỡng chọn để ≤ 10 % tệp không có loại đó bị báo) <b>và</b> được bộ kiểm chứng độc lập đo lại xác nhận.</li>
+    <li><b>Nhãn tệp</b>, xét lần lượt, dừng ở điều đầu tiên đúng:
+      <br>(1) vi phạm một Constraint có ghi 04 ⟹ <b>04</b>, không phân tích;
+      <br>(2) không qua bước sàng lọc (mô hình hỏi “tệp có dấu vết sửa nào không”, ngưỡng chọn để ≤ 10 % tệp sạch bị báo) ⟹ <b>01</b>;
+      <br>(3) có ít nhất một thao tác nhãn 03 được báo ⟹ <b>03</b>;
+      <br>(4) có ít nhất một thao tác nhãn 02 được báo ⟹ <b>02</b> — nếu còn đoạn nghi 03 chưa đủ chắc thì kèm cảnh báo “có đoạn nghi 03 chưa đủ chắc”;
+      <br>(5) qua sàng lọc nhưng không báo được thao tác nào ⟹ <b>04</b>, lý do là một hoặc nhiều trong: xác suất thao tác cả file ở mức 0,4–0,6;
+      đoạn tìm được bị bộ kiểm chứng bác (điểm ≥ 0,80 thì kèm đoạn đó làm đoạn khả nghi); không có đoạn nào vượt ngưỡng.</li>
+    <li><b>Mỗi đoạn một thao tác</b>: thao tác có điểm vượt ngưỡng xa nhất. Hai đoạn chồng nhau quá 30 % độ dài đoạn ngắn hơn thì chỉ giữ đoạn vượt ngưỡng xa hơn.</li>
+    <li><b>01 nghĩa là</b> không thấy dấu vết của 8 thao tác — không phải chứng nhận bản thật. Cắt bỏ đầu–cuối tệp và đổi âm lượng cả tệp không tính là chỉnh sửa.
+      Thao tác khác không có nhãn riêng; hệ thống không cam kết phát hiện.</li>
+    <li><b>Không làm</b>: không chép lời, tóm tắt hay dịch; không nói số chỗ sửa chính xác, kiểu con (thay hay chèn), công cụ đã dùng,
+      nội dung đúng hay sai, người nói là ai. Mốc thời gian là một vùng, không cam kết đúng từng âm tiết.</li>
+  </ul></div>
+</section>
+
+<section id="assumption">
+  <div class="shead"><h2>6 · Assumption</h2></div>
+<div class="card tint"><ul class="tick">
+    <li><b>Về tệp</b>: không phải bản phát lại qua loa rồi ghi lại; micro không bị che hay cọ xát.
+      Nén khi ghi và khi gửi qua ứng dụng là biến đổi đồng đều trên cả tệp — trừ đoạn im lặng khi bộ mã bật DTX (thay im lặng bằng tiếng ồn giả).
+      Ứng dụng tự khử ồn (kể cả khử ồn AI) thì khử đều trên cả tệp.</li>
+    <li><b>Về người sửa</b>: sửa cục bộ tổng cộng ≤ 50 % độ dài tệp; mỗi đoạn thay hoặc chèn dài ≥ 0,1 s, phần bị xoá ≥ 1 âm tiết;
+      giữ lời sau khi sửa mạch lạc, hợp ngữ pháp;
+      dùng công cụ phổ thông, không cố tình phá dấu vết — không phủ nhiễu che, không cố ý nén lại nhiều lần để tẩy vết
+      (chuyển tiếp qua ứng dụng vài lần vẫn trong phạm vi). Giọng máy có thể nhái rất giống người thật — không giả định giọng máy nghe lạ.</li>
+    <li><b>Về người dùng</b>: chấp nhận nhãn 04 và đưa tệp cho người nghe lại khi nhận 04; chấp nhận chờ tới 3 phút cho mỗi 5 phút âm thanh.</li>
+  </ul></div>
+</section>
+
+
+<footer>
+  <span>VoiceAudit · Định nghĩa bài toán</span>
+  <span>Sàng lọc sơ bộ — không phải kết luận giám định tư pháp</span>
+</footer>
+</div>
+<script>
+(function(){var b=document.getElementById('themebtn'),r=document.documentElement;
+function cur(){return r.dataset.theme||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');}
+function paint(){b.textContent=(cur()==='dark'?'\u25D1 SÁNG':'\u25D0 TỐI');}
+b.addEventListener('click',function(){r.dataset.theme=(cur()==='dark'?'light':'dark');paint();});
+paint();})();
+</script>
+</body>
+</html>
