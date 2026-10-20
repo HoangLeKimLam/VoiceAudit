@@ -1,0 +1,51 @@
+lang	pool	prio	channel_id	channel_name	tab_to_scrape	cc_lb_hours_first100	cc_hits_of_100	tab_total_hours_all_licenses	verified_cc_sample_ids	owner_confidence	notes
+vi	class_session	1	UCXyjy-WREt-AieU2wsIvP6g	Bùi Việt Hà	videos+streams	145.5	98	videos>=544.5(capped400)+streams81.4	a_WSsj8kHKw,13yZxxpPJtE	high	raw online class recordings (Python/Scratch/olympiad), random sample 4/4 CC
+vi	class_session	1	UCXvJu0l6eQlA0mlnY6smEIA	Đặng Tuấn Thành	videos	140.2	100	videos>=387.8(capped400)	ry0YZ6lI-6w	high	C++ class sessions split in parts; has auto EN dub track -> pick original
+vi	class_session	1	UCaSb4SR6fLLiBKXuKp-v0qw	Học Văn Cô Minh Hiên	videos+streams	83.2	100	videos>=282.9(capped400)+streams13.1	kOEmPJJE2iA	high	literature lessons/trial classes; students (minors) may speak
+vi	class_session	2	UCfo8NSTcRgMoo17Ya4NvGtw	CÔ NGUYỄN HOA	videos	61.9	100	videos>=205.8(capped400)	7m1ttZ6Z6rA,eu3AWHPVguo	medium	own classes OK; publisher training re-uploads (e.g. 'Tập huấn 2026 ... Thầy Bùi Bá Mạnh') ownership doubtful -> exclude those titles
+vi	class_session	2	UCjQH9eAm01q3LdHq9NkuzpA	Phạm Thành Trung	videos	27.6	17	n/a	hPvz3FljsM4	low	MOET online preschool training 2021 re-uploaded by individual -> license doubtful
+vi	class_session	2	UCOvqfsTAKwQli9H9t5MOR8Q	Giap bui dinh	videos	22.8	18	n/a	K_Erya7RmAA	high	teacher's own online classes 2021 (children's voices)
+vi	lecture	2	UCCo3QfNjXnHSjBJVM70OgAQ	Phân tích SPSS 0905392489	videos	40.0	80	n/a	Ngws2LE8yXs	high	2020 Covid-era university lectures (research methods)
+vi	qa_livestream	1	UCNck9rwL6uP8Xh5V2TY_Qgw	Sư Hạnh Tuệ Theravāda	streams	148.5	100	streams>=564.4(capped400)	3Zt9p562Eek	high	livestream Q&A archives, random sample 4/4 CC was_live; has -drc formats
+vi	class_session	1	UCjlUGvFf27VIk0t036iT-qw	Phuc Minh Monastery (Chùa Phúc Minh)	streams+videos	127.7	100	videos>=288.8(capped400)+streams538.9	YUw7Km3n08o	high	online meditation classes/sutra lectures; streams sample 3/4 CC
+vi	class_session	1	UCOYy3RyWrnWxDX1TAniYhUA	Tu Viện Đạo Tâm - Riverside CA US	videos	150.8	100	videos>=605.3(capped400)	iLe-Bi-0F_g	high	weekly Zoom dharma class + Q&A (overseas VN)
+vi	lecture	2	UCrt55m1zgpsOWCbhfyft4Tg	Người Phương Ngoại	videos	130.2	100	videos>=509.5(capped400)	g3gb9HqGTsk	medium	Sư Giác Nguyên lectures; uploader may be disciples not speaker
+vi	class_session	1	UCoDLpeHljBu2dWemxYLKnYw	Thy Lam	videos+streams	214.3	100	videos>=625.7(capped400)+streams>=679.4(capped400)	SUNjnKDXM2s	medium	'Lớp Phật Pháp Buddhadhamma' online class sessions
+vi	meeting	1	UCW759e8p1Qz6QP-PKaECfGg	Hội Thánh Nhà Muôn Dân The Church Of All Nations	videos+streams	151.9	80	videos>=569.8(capped400)+streams290.0	asVbNNwsTcc	high	Friday Zoom group meetings (multi-party) + sermons; worship music in services -> music filter; streams sample 2/4 CC
+vi	class_session	2	UCYv6YH8DpXIFgx51wOEuTiQ	Hội Thánh Tin Lành Bến Tre	videos	108.2	100	videos>=183.2(capped400)+streams>=682.4(capped400)	tjty7OlsmK8	high	weekly online Bible study; streams sample 0/4 CC -> use videos tab
+vi	class_session	1	UCUtN9rPOxVzQBkaTJa1d2NQ	Trung Tâm Mục Vụ Giáo Phận Cần Thơ	streams	95.6	100	streams>=391.2(capped400)	VwhtBDGtKHw	high	diocesan online Bible/catechism classes (livestream, southern accent); streams sample 2/4 CC
+vi	lecture	2	UCopvJPs7wemUv6WrOBYHEMQ	Duc Vien Pagoda (Chùa Đức Viên)	videos	79.8	91	videos>=172.1(capped400)+streams>=1016.1(capped400)	JCbocIkGk-U	high	weekend dharma talks; ceremonies with chanting; streams sample 0/4 CC
+vi	qa_livestream	2	UCv5Ean6w1ZE9ijbMc8qkU9A	Quang Dũng DBD Official	streams+videos	73.2	100	videos>=126.1(capped400)+streams>=285.1(capped400)	vim7cfe-xQw	high	stock-market livestream talk/Q&A; has auto EN dub track
+vi	seminar	2	UCz7HiR3m06mO8r8hiAjfqYQ	Dr Nguyễn Hồng Thanh	videos	58.7	48	n/a	nLVJWwCXM0g	medium	medical webinars/conference sessions (multi-speaker, possibly organizer recordings)
+vi	seminar	2	UCGFYoAZldHxBUpInc-XuVUA	Hội Hô hấp Việt Nam Official	videos	33.8	99	n/a	wpwJIjsvTT8	high	official society; conference sessions, case discussions; some English
+vi	seminar	3	UC2JPCC4OKl5oQUeiLBFR--w	PANTADO - TIẾNG ANH TRỰC TUYẾN	videos	16.9	13	n/a	3I7p6K91uzc	high	parenting webinars (Zoom)
+vi	seminar	3	UCXeQ5kUBh0ST3ttwvoDdVqg	THANHS BRANDING & MANAGEMENT	videos	7.4	3	n/a	K6oUFe712m8	high	3h management webinars
+vi	meeting	3	UCAd__HpYO1As5vHX5XhZSCg	Bài Giảng Kỹ Thuật	videos	11.2	11	n/a	GTCS5OTn7Mg	medium	online thesis-defence sessions (UTH road/bridge 2021), multi-speaker
+vi	meeting	3	UChaTR7G-1boAIbN_B34swPg	Phòng Giáo dục và Đào tạo Thành phố Thủ Đức	streams	18.4	93	n/a	jGh5VmvHaJI	high	government education office livestream trainings (mostly short)
+vi	meeting	3	UCJcPERudmipXzapmx0qQxww	Truyền hình Lạng Sơn - LSTV	streams	4.8	25	n/a	Agjy0Wdfp4Q	high	provincial council session livestreams (multi-mic, anthem at start) -> hard-negative pool
+vi	phone_simple	3	UCPXcCzV_gfUy85GxJc8ZB6Q	Quan Ngo	streams	6.6	5	n/a	QXn-AyqiycU	high	personal chat livestream (webcam/phone)
+vi	phone_simple	3	UCkzqlROtkF0dzYKnOYlwN7w	Tuấn Tò	streams	4.5	2	n/a	JTHzLtbCNWs	high	gaming+talk livestream (game audio -> music filter)
+vi	phone_simple	3	UCHbJRyAjcNaUZDGlkO66F3Q	Giang Sóc Trăng	streams	2.2	2	n/a	SGKiRGjGCUc	high	casual family-chat livestream, Mekong accent
+vi	mixed_lang	4	UCPw64z0RnZmb_DGiPQ-fbRg	Ánh sensei	streams	108.9	100	n/a	ft5ardiWWAE	high	JLPT livestreams: Vietnamese talk + Japanese reading -> code-switch, low priority
+vi	exclude_or_low	4	UCgiZ8eCNPf-TLcQPJ98yrYg	Chua Ba Vang	streams	129.1	100	n/a	5Ejhnsyn0H4	high	mostly chanting/ritual livestreams; keep only talk segments
+en	meeting	1	UCHUDjJ4VIFaf3a9ap9s5qEA	City of Durham NC	streams	288.2	100	n/a	Hw5cR6bambk	high	city council livestream archives (multi-mic)
+en	meeting	1	UCG4ZjL-JpSqwPoxd5yNpMGA	City of Fort Worth	streams	174.7	100	n/a	ZZqJnWf5p-Q	high	council meetings (multi-mic)
+en	meeting	1	UCJkWMLSqRNKLoyUZQiNoAcQ	Town Meeting TV (Burlington VT)	streams	149.7	100	n/a	pKrdyGi3Bjk	high	PEG station: council/school/committee meetings
+en	meeting	1	UCrM4z9DzdvD3bnA5E7tDtKQ	ORCA Media	videos	139.7	100	n/a	s-7NXIl_p9c	high	PEG station: school board/committee meetings (VT)
+en	meeting	2	UCnjhMYHUcZMCfGbukz05DhA	Town of Amherst, MA	videos	177.0	85	n/a	urCHdpZktPc	high	public hearings/committee meetings; many auto-dub tracks -> pick original
+en	meeting	2	UCEfG-y0cHtoAV6RVe9vntSA	Marion Township	videos	165.7	100	n/a	BQna3CBqILM	high	board of supervisors meetings
+en	meeting	2	UC95egG4Say-HvNrlJT_yCXg	City of Independence, Missouri	videos	117.0	100	n/a	nhvjRsr_TAY	high	council/planning meetings (was_live)
+en	meeting	2	UCk9PswI845zMloMn8kaIt1A	HCAM	videos	85.7	100	n/a	RHXU8wurwq4	high	Hopkinton community media: school committee etc.
+en	meeting	1	UCS9L9LsgGfUkXLVv2uIatzg	Northern Ireland Assembly	videos	153.8	100	n/a	0RpoB6C40lw	high	committee meetings (NI/UK accents, Zoom-era hybrid)
+en	meeting	1	UCnAsiniI4DF7vAAe7omWWFQ	US National Archives	streams	171.5	95	n/a	__w8Y67NW2A	high	federal advisory committee meetings (public domain + CC-BY)
+en	seminar	2	UCUp6Pd9fx8_UX7S38Ih_JqA	National Human Genome Research Institute	videos	50.5	100	n/a	US528_eL-ec	high	seminars, oral histories (federal)
+en	seminar	1	UCIxsmRWj3-795FMlrsikd3A	Linux Plumbers Conference	streams	401.8	99	n/a	GUeuBc9WN-4	high	full-day room livestreams (8-9 h) with audience discussion
+en	meeting	2	UC7_X0WkMtkWzaVUKF-PRBNQ	LF Decentralized Trust	videos	68.3	100	n/a	9tPfntc4-1E	high	open-source community Zoom calls
+en	meeting	2	UC5JBtmoz7ePk-33ZHimGiDQ	Jenkins	videos	52.6	100	n/a	ddQ_DF-u1iY	high	office-hours Zoom calls
+en	interview	2	UCW0qBUQRvC3O292uzrSrcpw	UNCG Special Collections and University Archives	videos	82.3	100	n/a	KVt3v5hmblc	high	oral history interviews, one take
+en	meeting	3	UCORqXk1ZV44MOwpCorAROyQ	AI Institute at UofSC - #AIISC	videos	60.3	51	n/a	Es0HCyF1A3c	high	dissertation defences (room recordings)
+en	class_session	3	UCQviXmqPa6PRBmukpy_gWeA	BibleTalk.tv	videos	58.7	100	n/a	pfC0yuJtMc0	high	church class sessions (some edited intros)
+en	lecture	2	UC4EY_qnSeAP1xGsh61eOoJA	YaleCourses (Open Yale Courses)	videos	45.0	57	n/a	RxENRH-v0Xk	high	OYC terms CC BY-NC-SA 3.0 (YouTube shows CC-BY) -> treat as NC-SA
+en	lecture	2	UC640y4UvDAlya_WOj5U4pfA	NPTEL (nptelhrd)	videos	59.7	60	n/a	HCUv6Yx22O4	high	Indian-English lectures; NPTEL states CC BY-NC-SA -> treat as NC-SA
+en	lecture	3	UCuXy5tCgEninup9cGplbiFw	Missing Semester (MIT)	videos	31.4	39	n/a	2sjqTHE0zok	high	classroom lectures 2020; many auto-dub tracks
+vi	meeting	1	UCW1dR990N24-wbq2yrM4dqg	TOAI DOANH	videos				kOzViqasOaA,XJjSllp6AKo	medium	amateur raw recordings of family-clan meetings (speeches, reports); 870 subs; added 17/10 (search CC, user approved)
