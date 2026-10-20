@@ -217,7 +217,7 @@ Vì vậy thước đo chính của P3 / P4 / P5 là **bắt được bao nhiêu
 
 1. Lane của tôi giữ **vấn đề nào** trong cây (mục 2), thao tác và kênh nào?
 2. Lane tôi chịu **những Req nào**, đạt khi bao nhiêu, hiện đang bao nhiêu (mục 5 + tệp lane mục 2)?
-3. **Baseline** phải vượt là số nào, tái tạo bằng lệnh gì (tệp lane mục 3)?
+3. **Baseline** phải vượt là số nào, tái tạo bằng lệnh gì (tệp lane mục 4 «Baseline»)?
 4. **Ngân sách vu oan** của kênh tôi là bao nhiêu (mục 7)?
 5. Bốn rào áp vào lane tôi cụ thể là gì, và tôi **được tự do** ở những đâu (mục 6)?
 
@@ -301,16 +301,43 @@ Có gói chung là chạy được: `python -m v6.product.ghep_thu --name nen` p
 4. Mở Claude Code tại thư mục bộ gửi, gõ câu đầu (thay **mọi** chữ `P3` bằng lane của bạn):
 
    ```
-   Tôi phụ trách P3. Đọc @VoiceAudit_6Muc.html (bản đề xuất đã nộp — gốc của mọi mục tiêu),
-   @lanes/BAT_DAU.md, @lanes/CHUNG.md, @lanes/P3/CLAUDE.md, @lanes/DU_LIEU.md và @lanes/P3/DU_LIEU.md. CHƯA đọc Y_TUONG.md, Y_TUONG_CHUNG.md, HUONG_PHUONG_PHAP.md.
-   Bước 1: trả lời 5 câu ở mục 9 của BAT_DAU.md cho lane P3; tóm tắt bằng lời của bạn
-   bài toán của mảng (mục «Hiểu bài toán») và các trường hợp dữ liệu phải phủ.
-   Bước 2: tái tạo baseline bằng lệnh ở mục «Baseline» của tệp lane, báo số có khớp không.
-   Bước 3: tự đề xuất 2–3 hướng của riêng bạn (tìm tài liệu, bài báo, mã mở; nghĩ lại
-   bài toán từ đầu), mỗi hướng kèm lý do, dữ liệu cần, cách đo ở ngân sách của kênh.
-   Bước 4: chỉ sau bước 3 mới đọc @lanes/P3/Y_TUONG.md, @lanes/Y_TUONG_CHUNG.md,
-   @lanes/HUONG_PHUONG_PHAP.md; so với hướng của bạn, nói chỗ giống / khác, rồi đề xuất
-   chọn hướng nào theo số đo. Không coi ý tưởng của nhóm trưởng là đáp án.
+   Tôi phụ trách P3 trong dự án VoiceAudit. Đây là phiên đầu tiên: bạn chưa có ngữ cảnh gì.
+   CLAUDE.md ở gốc kho cho biết nhánh và lane của tôi.
+
+   Đọc kỹ, hết từng tệp, theo đúng thứ tự:
+   1. @VoiceAudit_6Muc.html — bản đề xuất đã nộp, gốc của mọi mục tiêu (không sửa).
+   2. @VoiceAudit_TomTat.html (cây vấn đề) và VoiceAudit_DanhGia.docx phần 2–5 (metric, cách đo;
+      tệp Word — trích chữ bằng python-docx có sẵn trong .venv).
+   3. @lanes/BAT_DAU.md, @lanes/CHUNG.md, @lanes/P3/CLAUDE.md, @lanes/DU_LIEU.md, @lanes/P3/DU_LIEU.md.
+   4. Phần ranh giới của các lane mà CLAUDE.md gốc bảo đối chiếu.
+   CHƯA đọc lanes/P3/Y_TUONG.md, lanes/Y_TUONG_CHUNG.md, lanes/HUONG_PHUONG_PHAP.md.
+   VoiceAudit.html và CAY_PHAN_RA_* chỉ tra cứu khi cần; phần «hiện trạng / cách làm» trong đó
+   là hệ thống hiện tại, không phải đáp án.
+
+   Rồi làm lần lượt; xong mỗi bước thì dừng, chờ tôi xác nhận:
+   Bước 1 — Hiểu. (a) Tóm tắt bằng lời của bạn: bài toán, 4 nhãn, cây vấn đề, luồng xử lý,
+   6 lane ghép với nhau ra sao. (b) Trả lời 5 câu ở mục 9 của BAT_DAU.md cho P3, mỗi ý ghi tệp
+   và mục nguồn. (c) Cái cố định và cái tự do của lane tôi. (d) Phạm vi dữ liệu phải phủ,
+   dạng dữ liệu cần thu, cách kiểm trước khi nộp. (e) Ranh giới với các lane cần đối chiếu.
+   Chỗ nào tài liệu mâu thuẫn hay không rõ thì ghi ra, đừng tự đoán.
+   Bước 2 — Tái tạo baseline bằng lệnh ở mục «Baseline» của tệp lane (chạy qua
+   bash .tmp_v6/wf/run_serial.sh); báo số có khớp tài liệu không.
+   Bước 3 — Tự đề xuất 2–3 hướng của riêng bạn (tìm tài liệu, bài báo, mã mở; nghĩ lại bài toán
+   từ đầu). Mỗi hướng: lý do, dữ liệu cần thu, cách đo ở ngân sách của kênh, rủi ro.
+   Bước 4 — Chỉ sau bước 3 mới đọc @lanes/P3/Y_TUONG.md, @lanes/Y_TUONG_CHUNG.md,
+   @lanes/HUONG_PHUONG_PHAP.md; so với hướng của bạn (giống / khác), rồi đề xuất chọn hướng
+   theo số đo. Không coi ý tưởng của nhóm trưởng là đáp án.
+   Bước 5 — Ghi báo cáo đầu tiên lanes/P3/BAO_CAO_<ngày><tháng>.md: phần hiểu ở bước 1, số baseline
+   ở bước 2, hướng đã chọn và lý do — để các phiên sau đọc lại.
+
+   Luật: không sửa tệp của lane khác, không sửa VoiceAudit_6Muc.html; việc nặng chạy qua
+   run_serial.sh; dùng GPU, chạm tập khoá, thêm nguồn cào thì hỏi nhóm trưởng trước.
+   ```
+
+   **Các phiên sau** (không cần đọc lại từ đầu):
+   ```
+   Tiếp tục việc lane P3. Đọc CLAUDE.md gốc, @lanes/P3/CLAUDE.md và báo cáo mới nhất
+   lanes/P3/BAO_CAO_*.md; tóm tắt đang ở đâu và việc tiếp theo, chờ tôi xác nhận rồi làm tiếp.
    ```
 
 5. So câu trả lời bước 1 của Claude với tài liệu. Khớp thì bắt đầu; lệch thì hỏi nhóm trưởng.
