@@ -62,7 +62,7 @@ Có trong bộ gửi: chuỗi cào `v6/scrape/*` (trừ `long_sets.py` của P0)
 *Sở hữu chỉ để không sửa chồng lên nhau khi ghép. Mã mới của bạn đặt ở chỗ riêng (ví dụ `experts/P2/`, thư mục mã mới của lane) — không bắt buộc sửa tiếp trên các tệp này.*
 
 ## 6. Luật riêng
-- YouTube chỉ **kênh không chuyên**; kênh mới phải liệt kê để **người dùng duyệt** trước khi vào whitelist (`fetch.py NO_NEW_FETCH` chặn kênh chuyên nghiệp).
+- YouTube chỉ **kênh không chuyên**; kênh mới **tự thêm** vào whitelist, không cần duyệt, miễn không chuyên + CC BY / BY-SA / CC0; ghi lý do chọn kênh vào thẻ bộ (`fetch.py NO_NEW_FETCH` chặn các kênh chuyên nghiệp đã biết).
 - **Dữ liệu cào là tập kiểm thử của cả nhóm**: khi cấp làm âm cứng / dữ liệu học, chia 5 fold người nói (`meta.person` = nhóm kênh); mô hình fold k chỉ học phần fold ≠ k. Ghi rõ trong thẻ bộ âm cứng.
 - Không xoá âm gốc khi chưa được phép; gỡ = `_quarantine`.
 
