@@ -127,7 +127,7 @@ Chưa rõ vì sao vi vẫn vu oan 5,3 % trên tệp 01 gốc ở ngân sách 3 %
 5. **Hợp đồng đóng băng** (§4) và **ngân sách vu oan** (§3): muốn đổi → đề xuất `lanes/DE_XUAT/<ngay>_<lane>_<ten>.md`, P0 duyệt.
 6. **Không sửa tệp lane khác sở hữu.** Cần sửa → đề xuất cho chủ lane / P0.
 7. **Không xoá dữ liệu** — chuyển `_quarantine` kèm nhật ký. Không ghi đè kết quả người khác: mọi kết quả có `--tag` / hậu tố riêng.
-8. **Chính sách dữ liệu**: cào chỉ CC BY / BY-SA / CC0, YouTube chỉ **kênh không chuyên** (người dùng duyệt kênh mới); không tôn giáo, không trẻ em / trường phổ thông; **không nhái giọng người cào được / người nổi tiếng**; dữ liệu nội bộ. **Khử ồn:** **khử ồn đơn sơ có sẵn của ứng dụng ghi âm / gọi phổ thông** (WebRTC NS mức 0–2, chế độ mặc định) là **01**, dù áp cả tệp hay một đoạn — bản chất vẫn là một bản ghi bình thường. Khử ồn **chuyên nghiệp / mạnh** (ứng dụng ghi âm chuyên nghiệp có lọc ồn sâu, WebRTC NS mức 3, chế độ «Cao», công cụ khử ồn AI), bật lúc ghi hay áp sau khi ghi, là **02**. Tiêu chí là **loại ứng dụng / công cụ**, không phải cả tệp hay một đoạn (`DU_LIEU.md` mục 2.2). Bản ghi có `meta.chinh_sach` (vd. giọng máy cũ nhân bản người không được phép nhái) **không dùng để học** — quyết định 18.
+8. **Chính sách dữ liệu**: cào chỉ CC BY / BY-SA / CC0, YouTube chỉ **kênh không chuyên**; tự thêm nguồn / kênh / kho không cần duyệt, miễn đúng phạm vi dữ liệu của lane và qua `kiem_bo`; không tôn giáo, không trẻ em / trường phổ thông; **không nhái giọng người cào được / người nổi tiếng**; dữ liệu nội bộ. **Khử ồn:** **khử ồn đơn sơ có sẵn của ứng dụng ghi âm / gọi phổ thông** (WebRTC NS mức 0–2, chế độ mặc định) là **01**, dù áp cả tệp hay một đoạn — bản chất vẫn là một bản ghi bình thường. Khử ồn **chuyên nghiệp / mạnh** (ứng dụng ghi âm chuyên nghiệp có lọc ồn sâu, WebRTC NS mức 3, chế độ «Cao», công cụ khử ồn AI), bật lúc ghi hay áp sau khi ghi, là **02**. Tiêu chí là **loại ứng dụng / công cụ**, không phải cả tệp hay một đoạn (`DU_LIEU.md` mục 2.2). Bản ghi có `meta.chinh_sach` (vd. giọng máy cũ nhân bản người không được phép nhái) **không dùng để học** — quyết định 18.
 9. **Máy yếu bộ nhớ**: việc nặng tuần tự qua `bash .tmp_v6/wf/run_serial.sh <lệnh>`; việc mạng nhẹ `run_nolock.sh`. **GPU đang hoãn** — dùng GPU phải hỏi người dùng.
 10. **Không sửa `VoiceAudit_6Muc.html`** (bản nộp). Đổi `VoiceAudit.html` → qua P0.
 11. **Báo cáo trung thực**: mỗi kết luận kèm số + tệp nguồn + khoảng tin cậy khi có; số xấu đi cũng phải ghi.
@@ -188,7 +188,7 @@ Học trên dữ liệu nào, đầu vào nào cũng được; khi nộp vẫn k
 Các thử nghiệm đã làm và kết quả nằm ở [`Y_TUONG_CHUNG.md`](Y_TUONG_CHUNG.md) và `lanes/<Px>/Y_TUONG.md` — **đọc sau khi đã tự đề xuất hướng**, để không bị neo theo cách nhóm đang làm.
 
 ## 7. Khi nào PHẢI hỏi (P0 hoặc người dùng)
-Dùng GPU · xoá / chuyển dữ liệu lớn · thêm kênh / nguồn cào · đổi hợp đồng / ngân sách / điểm vận hành / chỉ tiêu · chạm tập khoá · việc > 6 giờ máy (để P0 xếp hàng) · đổi chính sách dữ liệu.
+Dùng GPU · xoá / chuyển dữ liệu lớn · đổi hợp đồng / ngân sách / điểm vận hành / chỉ tiêu · chạm tập khoá · việc > 6 giờ máy (để P0 xếp hàng) · đổi chính sách dữ liệu.
 
 ## 8. Làm việc với Claude
 - Mở Claude Code ở **thư mục gốc của bộ gửi**, câu đầu theo `lanes/BAT_DAU.md` mục 11: đọc @lanes/BAT_DAU.md, @lanes/CHUNG.md và @lanes/<Px>/CLAUDE.md (**chưa** đọc các tệp ý tưởng); trả lời 5 câu tự kiểm; tái tạo baseline bằng `ghep_thu`; tự đề xuất 2–3 hướng; **sau đó** mới đọc `<Px>/Y_TUONG.md`, `Y_TUONG_CHUNG.md`, `HUONG_PHUONG_PHAP.md` để so.

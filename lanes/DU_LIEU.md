@@ -157,7 +157,7 @@ P0 giữ toàn bộ trên máy gốc. P1–P5 nhận **bộ gửi cơ bản** (t
 ## 6. Thêm dữ liệu mới — cách làm để ghép không xung đột
 
 ### 6.1 Tự cào
-Đi **đúng chuỗi cào của hệ thống** (`v6/scrape`, P2 giữ mã) để mọi bản cào cùng giấy phép, cùng lọc, cùng cách gom người nói và cùng luật tập khoá: `bash .tmp_v6/cache/scrape_queue.sh <bước>` theo thứ tự `discover → fetch → probe_filter → segment → align → lid → spk → hosts_qc → build_sets` (bước `search` chỉ gợi ý kênh, không tự thêm). Kênh mới phải được nhóm trưởng duyệt. Lane khác cần dữ liệu cào: chạy cùng chuỗi với thẻ riêng, hoặc gửi danh sách nguồn cho P2. **Không tự viết bộ cào riêng ra định dạng khác.**
+Đi **đúng chuỗi cào của hệ thống** (`v6/scrape`, P2 giữ mã) để mọi bản cào cùng giấy phép, cùng lọc, cùng cách gom người nói và cùng luật tập khoá: `bash .tmp_v6/cache/scrape_queue.sh <bước>` theo thứ tự `discover → fetch → probe_filter → segment → align → lid → spk → hosts_qc → build_sets` (bước `search` chỉ gợi ý kênh). Kênh mới tự thêm vào `data/scrape/channels_whitelist.tsv`, không cần duyệt, miễn kênh không chuyên + CC BY / BY-SA / CC0; ghi lý do chọn kênh vào thẻ bộ. Lane khác cần dữ liệu cào: chạy cùng chuỗi với thẻ riêng, hoặc gửi danh sách nguồn cho P2. **Không tự viết bộ cào riêng ra định dạng khác.**
 
 ### 6.2 Tự ghi (thiết bị, ứng dụng thật)
 `source = "tuthu"`, `person = "tuthu:<mã người>"` (cùng một người → cùng một mã ở mọi bộ), ghi thêm `thiet_bi`, `ung_dung`, mức khử ồn nếu chỉnh; người tham gia đồng ý; chỉ giọng của người tham gia.
@@ -178,8 +178,8 @@ Công cụ, cách sinh là tự do. Bắt buộc: dòng `edits` đủ trường 
 4. Thẻ `data_labels/v6/<bộ>/README.md`: nguồn · giấy phép · ngày · ai làm · cách làm (công cụ, phiên bản, tham số) · số tệp theo loại · số người nói · đã kiểm chưa.
 
 ### 6.6 Chính sách dữ liệu
-- Cào: chỉ CC BY / BY-SA / CC0; YouTube chỉ kênh không chuyên (từ 17/10; dữ liệu cũ của vài kênh lớn được giữ theo quyết định của nhóm trưởng); kênh mới nhóm trưởng duyệt; không tôn giáo, trẻ em, trường phổ thông.
-- Kho nghiên cứu giấy phép NC / ND mới: hỏi nhóm trưởng. Kho NC đang dùng (VIVOS, VietMed, MMS-TTS…): chỉ nội bộ, không phát tán.
+- Cào: chỉ CC BY / BY-SA / CC0; YouTube chỉ kênh không chuyên (từ 17/10; dữ liệu cũ của vài kênh lớn được giữ theo quyết định của nhóm trưởng); kênh mới tự thêm, không cần duyệt; không tôn giáo, trẻ em, trường phổ thông.
+- Kho nghiên cứu (kể cả giấy phép NC / ND, như VIVOS, VietMed, MMS-TTS…): tự chọn, không cần duyệt; chỉ dùng nội bộ, không phát tán; ghi giấy phép vào thẻ bộ.
 - Nhái giọng (TTS / VC): chỉ người trong kho nghiên cứu (VIVOS, vox, EdAcc, AMI, VoxPopuli, LibriSpeech); **không** người cào được, celeb, VSS, VSASV, viVoice; giọng tham chiếu là bản ghi **khác** của cùng người; mỗi người ≤ 6 % số tệp một bộ.
 - Không xoá — gỡ = chuyển `_quarantine` kèm nhật ký lý do.
 

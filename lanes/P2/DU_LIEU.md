@@ -61,13 +61,13 @@ Nhóm trưởng chọn từ dữ liệu sẵn có để bạn hiểu định d�
 
 | Cho | Gợi ý | Lưu ý |
 |---|---|---|
-| Ghi âm thật tiếng Việt | YouTube CC BY kênh không chuyên qua `v6/scrape` | kênh mới nhóm trưởng duyệt |
+| Ghi âm thật tiếng Việt | YouTube CC BY kênh không chuyên qua `v6/scrape` | kênh mới tự thêm vào whitelist |
 | Đa thiết bị, giọng đọc | Common Voice vi / en (CC0), FLEURS (CC BY 4.0) | là giọng đọc, không thay hội thoại tự nhiên |
 | Tiếng Anh tự nhiên | People's Speech (CC BY / BY-SA), VoxPopuli (CC0), FOSDEM / CCC (CC BY) | — |
 | Tệp chắc chắn 01, ứng dụng thật | tự ghi trên nhiều điện thoại, máy ghi âm, laptop, tai nghe Bluetooth; gửi qua Zalo, Messenger, Viber, Telegram, WhatsApp; gọi VoLTE / Zalo; họp Zoom / Meet / Teams | chỉ giọng người tham gia, có đồng ý |
 | Biến đổi lành tính | ffmpeg trên tệp thật; chuỗi chuyển tiếp qua ứng dụng thật | — |
-| Hội thoại nhiều người tiếng Việt | tự ghi nhóm; kho nghiên cứu hội thoại | kho NC → hỏi nhóm trưởng |
+| Hội thoại nhiều người tiếng Việt | tự ghi nhóm; kho nghiên cứu hội thoại | kho NC: chỉ dùng nội bộ |
 
 ## 7. Việc cần người thật
 
-Gửi tệp qua ứng dụng thật, gọi điện, họp trực tuyến · tự ghi nhiều thiết bị, hội thoại nhóm · nhóm trưởng duyệt kênh YouTube mới.
+Gửi tệp qua ứng dụng thật, gọi điện, họp trực tuyến · tự ghi nhiều thiết bị, hội thoại nhóm.
