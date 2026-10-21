@@ -149,7 +149,9 @@ Tài liệu chỉ rào **bốn thứ** — để mỗi người làm đúng vi�
 | **3. Ghép được, thống nhất khi ghép** | Xuất đúng định dạng trao đổi (hợp đồng H1–H6); giữ hai ngân sách ở mục 7; chạy ghép thử trước khi nộp; không sửa mã lane khác sở hữu (muốn đổi thì đề xuất, mục 12); mã mới có test, không phá test cũ | để phần của bạn cắm vào là chạy, không làm hỏng phần người khác |
 | **4. An toàn** | Mô hình nền lớn phải là mô hình đã huấn luyện sẵn (đầu nhỏ / bộ phân loại nhỏ trên đặc trưng thì học từ đầu được); chính sách dữ liệu (dưới đây); không xoá dữ liệu — chuyển `_quarantine`; việc nặng chạy tuần tự, GPU phải hỏi; không sửa bản đã nộp `VoiceAudit_6Muc.html` | quyết định đã chốt của nhóm |
 
-*Chính sách dữ liệu:* cào chỉ giấy phép CC BY / BY-SA / CC0; YouTube chỉ kênh không chuyên (nhóm trưởng duyệt kênh mới); không tôn giáo, không trẻ em, không trường phổ thông; không nhái giọng người thật cào được hay người nổi tiếng; dữ liệu nội bộ.
+*Chính sách dữ liệu:* cào chỉ giấy phép CC BY / BY-SA / CC0; YouTube chỉ kênh không chuyên (kênh chuyên nghiệp thường đã qua hậu kỳ, không còn là bản ghi thật đơn sơ); không tôn giáo, không trẻ em, không trường phổ thông; không nhái giọng người thật cào được hay người nổi tiếng; dữ liệu nội bộ.
+
+*Lấy dữ liệu:* **tự do** — tự tìm nguồn, kênh, kho nghiên cứu, tự ghi, tự sinh, **không cần xin duyệt**, miễn **đúng phạm vi dữ liệu của lane** (`DU_LIEU.md`, `<Px>/DU_LIEU.md`) và đúng chính sách trên. Ghi nguồn + giấy phép vào thẻ bộ và chạy `kiem_bo` trước khi dùng: lệnh này tự bắt bản ghi rơi vào tập khoá, sai ranh giới nhãn, sai chính sách nhái giọng.
 
 **Tự do — mọi thứ còn lại:**
 - **Cách làm:** mô hình, kiến trúc, đặc trưng, cách sinh dữ liệu, thứ tự các bước. Được dùng mô hình nền khác XLS-R, miễn đã huấn luyện sẵn và nằm trong ngân sách thời gian chạy.
@@ -330,8 +332,10 @@ Có gói chung là chạy được: `python -m v6.product.ghep_thu --name nen` p
    Bước 5 — Ghi báo cáo đầu tiên lanes/P3/BAO_CAO_<ngày><tháng>.md: phần hiểu ở bước 1, số baseline
    ở bước 2, hướng đã chọn và lý do — để các phiên sau đọc lại.
 
+   Dữ liệu: tự tìm, tự thu thoải mái, không cần xin duyệt — miễn đúng phạm vi dữ liệu của lane
+   (DU_LIEU.md) và chính sách dữ liệu (BAT_DAU.md mục 6); ghi nguồn vào thẻ bộ, chạy kiem_bo trước khi dùng.
    Luật: không sửa tệp của lane khác, không sửa VoiceAudit_6Muc.html; việc nặng chạy qua
-   run_serial.sh; dùng GPU, chạm tập khoá, thêm nguồn cào thì hỏi nhóm trưởng trước.
+   run_serial.sh; dùng GPU, chạm tập khoá thì hỏi nhóm trưởng trước.
    ```
 
    **Các phiên sau** (không cần đọc lại từ đầu):
@@ -352,5 +356,5 @@ Có gói chung là chạy được: `python -m v6.product.ghep_thu --name nen` p
 - **Sau mỗi đợt việc:** ghi `lanes/<Px>/BAO_CAO_<ngày><tháng>.md` — giả thuyết · làm gì · số trước / sau (cùng thước, cùng ngân sách) · ô nào tụt · bước tiếp.
 - **Có cải tiến:** chạy ghép thử → không ô nào của lane khác tụt quá 5 điểm, không vượt ngân sách → nộp gói chuyên gia `experts/<Px>/<tên>_<phiên bản>/` (`CHUNG.md` mục 3.3, 4).
 - **Muốn đổi định dạng, ngân sách, ngưỡng, chỉ tiêu:** viết `lanes/DE_XUAT/<ngày>_<Px>_<tên>.md`, nhóm trưởng duyệt.
-- **Phải hỏi trước khi:** dùng GPU · xoá hoặc chuyển dữ liệu lớn · thêm nguồn cào · chạm tập khoá · chạy việc quá 6 giờ máy · đổi chính sách dữ liệu.
+- **Phải hỏi trước khi:** dùng GPU · xoá hoặc chuyển dữ liệu lớn · chạm tập khoá · chạy việc quá 6 giờ máy · đổi chính sách dữ liệu. Thêm nguồn / kênh / kho dữ liệu **không** cần hỏi (mục 6, «Lấy dữ liệu»).
 - **Nhịp ghép:** hằng tuần nhóm trưởng ghép các gói mới, gửi lại từng lane «ô nào tụt, vì sao».
