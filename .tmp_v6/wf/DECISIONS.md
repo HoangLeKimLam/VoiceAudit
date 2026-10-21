@@ -75,3 +75,9 @@
     (tai_lieu, ma_chung, ma_san_pham, ma_k1, ma_cao, ma_sinh; liet-ke, --chi); bo duong dan cung D:\TuDuyTTNT (216 tep py + 15 sh, gia tri
     giu nguyen tren may goc); requirements.txt; v6.product.tai_mo_hinh (4 mo hinh HF ghim phien ban); trang thai cao loc 102 kenh tap khoa;
     hosts natural_v6 ghi san grow/session. Thu bo gui o thu muc khac: ghep_thu giong het, san pham ma thoat 0, test P1/P2/P5 dat.
+20. 21/10: LAY DU LIEU TU DO (nguoi dung): thanh vien tu tim / tu thu du lieu thoai mai, KHONG can xin duyet nguon, kenh, kho nghien cuu
+    (ke ca kho NC / ND, chi dung noi bo) — mien dung pham vi du lieu cua lane (DU_LIEU.md, <Px>/DU_LIEU.md) va dung chinh sach du lieu
+    (CC BY / BY-SA / CC0 khi cao; YouTube kenh khong chuyen; khong ton giao / tre em / truong pho thong; khong nhai giong nguoi cao duoc /
+    nguoi noi tieng). Ghi nguon + giay phep vao the bo; chay kiem_bo truoc khi dung (tu bat tap khoa, ranh gioi nhan, chinh sach nhai giong).
+    Bo khoi danh sach phai hoi: them nguon / kenh cao. Van phai hoi: GPU, cham tap khoa, xoa / chuyen du lieu lon, viec > 6 gio, doi chinh sach.
+    Da sua: BAT_DAU muc 6 + muc 11 (cau dau tien) + muc 12, CHUNG luat 8 + muc 7, DU_LIEU 6.1 + 6.6, P2/CLAUDE muc 6, P2/DU_LIEU muc 6-7.
