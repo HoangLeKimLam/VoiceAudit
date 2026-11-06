@@ -1,0 +1,37 @@
+{
+  "lane": "P3",
+  "name": "p3_v2",
+  "version": "2.0.0",
+  "date": "2026-11-06",
+  "channels": {"frames": ["den", "voi"], "heads": ["nen", "giong"]},
+  "files": {"oof": "oof_p3v2.pkl (H3 {id: (T, 2) f16}, 13407 id cua boundary_oof_fuse1)", "heads": "heads_p3v2.pkl ({id: (2,) f32}, 24717 id cua heads2_h2)"},
+  "contract_note": "tep khong co .wav (chi kieu P4 / P5, nhan 03: ghep_*, xoa_loi*, da_hai_cho, may_*) va tep ngoai natvi / naten goc: diem 0 (khong ra dong 02)",
+  "method": {
+    "frames": "LightGBM tren dac trung vat ly khung 20 ms tu .wav (feats.py: 16 dai, san nhieu, bang thong, YIN, MFCC, lo pho) dang TUONG DOI cuc bo - ca tep + XLS-R PCA-64 cuc bo + xep chong diem fuse1 (train_frames.py --stack --drop-file-ctx --rel-only)  GOP logit voi TCN gian no hoc tu dau co ham mat MIL theo tieu chi giai ma (train_seq.py); trong so LightGBM den 0,5 / 0,5, voi vi 0,5 en 0,7; hau xu ly post.post2 (mo 21 khung + nang bac co tre) — voi vi: post_raw_mx (khong mo)",
+    "heads": "vi: nen = B (LR tren XLS-R gop), giong = sigmoid(0,7 logit B + 0,3 logit A2 (LightGBM pho khung lang/noi + thong ke tep)); en: nen = B2 (LR XLS-R gop + thong ke khung XLS-R lang/noi + h2 + thong ke fuse1), giong = 0,15 h2 + 0,85 B2-DSP",
+    "selection": "chon tren OOF 5 fold theo nguoi noi (luat cung 2), RIENG theo ngon ngu; rang buoc: vu oan moi kenh <= ngan sach + 2 do lech chuan nhi thuc, Req 4 <= nen, Req 5 >= 0,92, Req 3 >= 0,97, khong o nao tut > 5 diem"
+  },
+  "data": {"train": "natvi / naten goc co .wav + benign (am cung), 5842 tep cho kenh khung xep chong; 12049 tep (them bien the app_*) cho TCN va dau A2 / B",
+           "folds": "item['fold'] = v6.boundary.detect.person_fold (crc32 % 5)", "seed": 7},
+  "unseen_tools": {"note": "CHUA danh gia: bo du lieu hien co khong co cong cu giu kin cho 02; resenh (khu on AI) / knnvc (chuyen giong) de danh cho tap khoa P0. Viec mo.",
+                   "den_held_out": null, "voi_held_out": null},
+  "budget": {"den": 0.005, "voi": 0.005, "nen": 0.0025, "giong": 0.0025},
+  "metrics_oof_budget": {
+    "source": ".tmp_v6/results/ghep_thu_p3_v2.md, .tmp_v6/results/evalp3_p3v2.md",
+    "v6naten": {"Req1": 0.704, "Req2": 0.668, "Req3": 0.988, "Req4": 0.038, "Req5": 0.955, "Req10": 0.527, "Req11": 0.721,
+                "tpr_typed": {"02_nen_cuc_bo": [0.556, 0.495, 0.619], "02_giong_cuc_bo": [0.906, 0.881, 0.930], "02_nen_toan_cuc": [0.324, 0.274, 0.374], "02_giong_toan_cuc": [0.916, 0.886, 0.945]},
+                "fa_real": {"den": 0.0061, "voi": 0.0076, "nen": 0.0030, "giong": 0.0061},
+                "auc_heads": {"nen": 0.920, "giong": 0.996}},
+    "v6natvi": {"Req1": 0.543, "Req2": 0.461, "Req3": 0.971, "Req4": 0.061, "Req5": 0.922, "Req10": 0.313, "Req11": 0.641,
+                "tpr_typed": {"02_nen_cuc_bo": [0.248, 0.211, 0.312], "02_giong_cuc_bo": [0.563, 0.469, 0.612], "02_nen_toan_cuc": [0.272, 0.217, 0.390], "02_giong_toan_cuc": [0.707, 0.522, 0.808]},
+                "fa_real": {"den": 0.0065, "voi": 0.0087, "nen": 0.0022, "giong": 0.0032},
+                "auc_heads": {"nen": 0.885, "giong": 0.947}},
+    "ci_note": "[gia tri, KTC 95 % thap, cao] bootstrap 400 lan theo cum nguoi noi (evalp3.ci_typed)"
+  },
+  "rtf_p3_only": 0.009,
+  "rtf_note": "do tren 8 tep 4-17 s, CPU, khong tinh XLS-R / fuse1 dung chung (P0); tep 300 s chua do",
+  "memory_mb_est": 600,
+  "weights": "weights/ (khong vao git: .gitignore experts/**/weights/) — tao lai: python experts/P3/p3_v2/fit_final.py ; python experts/P3/p3_v2/train_seq.py --final --epochs 10",
+  "signs": "signs.py: 2 dau hieu DO THAT moi dong + phan vi so voi kho tep that (signs_ref.json)",
+  "tests": "python experts/P3/p3_v2/tests/test_p3v2.py"
+}
