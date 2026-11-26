@@ -214,6 +214,7 @@ Nguyên nhân dưới đây đều **đã đo**, chưa sửa K1. Chi tiết và 
 | tệp | nội dung |
 |---|---|
 | `lanes/P1/BAO_CAO_2611.md` | báo cáo này |
+| `lanes/P1/HUONG_DAN.md` | hướng dẫn đọc nhánh, môi trường, dữ liệu cần xin, lệnh chạy lại |
 | `lanes/P1/PHAN_TICH_K1_2611.md` | phân tích các hàng K1 còn sai, ứng viên, luật chấm |
 | `lanes/P1/KICH_BAN_TU_GHI_KIEU_NOI.md` | kịch bản tự ghi hàng Kiểu nói |
 | `lanes/P1/BAO_CAO_2311.md`, `DAC_TA_DU_LIEU_TU_TAO_2511.md` | báo cáo 23/11, đặc tả dữ liệu tự tạo |
