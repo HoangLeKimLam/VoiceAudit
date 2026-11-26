@@ -194,7 +194,9 @@ def asr_speech_mask(y, win=0.03):
     else:
         lg = run(y)
         dt = len(y) / SR / lg.shape[0]
-    tok = lg.argmax(1) != blank
+    # sua 25/11 (P1, NHAT_KY_P1 2.19, ung vien C4): chunk_frames de trong mot so hang (logits toan 0 -> argmax 0 != blank 109 -> 'chu' ao,
+    # tep 80 s: +9,2 s tieng noi ao). Hang khong duoc gan = blank. Loi goc o features.py: lanes/DE_XUAT/2511_P1_chunk-frames.md
+    tok = (lg.argmax(1) != blank) & lg.any(1)
     t_tok = (np.where(tok)[0] + 0.5) * dt
     n = len(y) // int(win * SR)
     tc = (np.arange(n) + 0.5) * win
@@ -203,6 +205,26 @@ def asr_speech_mask(y, win=0.03):
     j = np.searchsorted(t_tok, tc)
     d = np.minimum(np.abs(tc - t_tok[np.clip(j, 0, len(t_tok) - 1)]), np.abs(tc - t_tok[np.clip(j - 1, 0, len(t_tok) - 1)]))
     return d <= 0.10
+
+
+AST_SPEECH_WIN, AST_SPEECH_THR = 2.0, 0.3      # chon tren dev, Huan duyet 23/11 truoc khi mo test (NHAT_KY_P1 2.14)
+
+
+def ast_speech_frames(y, n, win=0.03):
+    """Xac suat lop loi noi AST (max nhom speech cua k1x) theo cua so 2 s, trai ra n khung 30 ms.
+    Bu cho ASR tieng Viet khong ra chu tren loi vang / on / tieng Anh."""
+    import torch
+
+    from . import k1x
+    fx, m, grp = k1x._ast()
+    w = int(AST_SPEECH_WIN * SR)
+    p = []
+    for s in range(0, max(1, len(y) - w // 2), w):
+        x = fx(y[s:s + w].astype(np.float32), sampling_rate=SR, return_tensors="pt")
+        with torch.no_grad():
+            p.append(float(torch.sigmoid(m(**x).logits[0]).numpy()[grp["speech"]].max()))
+    tc = (np.arange(n) + 0.5) * win
+    return np.asarray(p)[np.clip((tc // AST_SPEECH_WIN).astype(int), 0, len(p) - 1)]
 
 
 def count_speakers(y, mask, win=0.03):
@@ -343,6 +365,16 @@ def analyse_channel(y, dur, extended=False, events=False, clip=None, lossy=False
         m["snr_db"] = None
     m["snr_ghi_chu"] = "ước lượng mù theo ASR, chỉ tham khảo; dòng SNR kiểm bằng vaudit.cond trong pipeline"
     sp_s = float(sp_a.sum() * 0.03)         # thoi luong tieng noi: theo ASR (mat na nang luong bo sot tieng nho)
+    m["tieng_noi_do"] = "ctc"
+    # sap chan 'qua it tieng noi' -> hop them (du to VA AST nghe ra loi). Phep hop chi TANG so giay -> tep dang nhan khong doi, khong cham hon.
+    # Ban nhe (test, asr_speech_mask bi thay) khong nap AST.
+    if (sp_s < 2 or sp_s < 0.3 * dur) and getattr(asr_speech_mask, "__name__", "") == "asr_speech_mask":
+        try:
+            u = sp_a[:k] | (sp_e[:k] & (ast_speech_frames(y, k) > AST_SPEECH_THR))
+            sp_s = max(sp_s, float(u.sum() * 0.03))
+            m["tieng_noi_do"] = "ctc ∪ (năng lượng ∩ AST > 0,3)"
+        except Exception as ex:             # noqa: BLE001  AST hong / thieu: giu so do ctc (van chan), ghi loi
+            m["tieng_noi_ast_loi"] = f"{type(ex).__name__}: {str(ex)[:120]}"
     m["tieng_noi_s"] = round(sp_s, 1)
     count_speakers.last = None
     n_spk = count_speakers(y, sp) if not r else None
