@@ -4,7 +4,7 @@
   e_6_8k_db             : năng lượng 6–8 kHz / 0–8 kHz trên khung lời → «băng hẹp»
 Chạy bằng D:\\venv_brouhaha (cờ -I: không thêm thư mục script vào sys.path, nên tệp này tự đủ).
 
-  D:\\venv_brouhaha\\Scripts\\python.exe -I experts/P1/build_cond/do_doc_lap.py run
+  D:\\venv_brouhaha\\Scripts\\python.exe -I experts/P1/build_cond/do_doc_lap.py run [p1_tunhien_v2 | p1_tunhien_v1]
   D:\\venv_brouhaha\\Scripts\\python.exe -I experts/P1/build_cond/do_doc_lap.py selftest
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 V6 = os.path.join(ROOT, "data_labels", "v6")
-OUT = os.path.join(V6, "p1_tunhien_v2", "_kiem", "doc_lap_2611.jsonl")
+
 SR = 16000
 KIEM_PP = ("_goc", "tinhieu.bangtan_5k", "tinhieu.g711_len_16k", "tinhieu.muc_noi_-41.5dBFS", "tinhieu.tiengnoi_20pct")
 
@@ -42,37 +42,40 @@ def so_do(y: np.ndarray, vad: np.ndarray, step: float) -> dict:
     return out
 
 
-def ds() -> list:
-    v2 = os.path.join(V6, "p1_tunhien_v2")
-    out = [(os.path.join(v2, json.loads(l)["file"]), "v2", json.loads(l)) for l in open(os.path.join(v2, "_kiem", "k1_ket_qua_2611.jsonl"), encoding="utf-8")]
-    out = [(p, b, r["file"], (r["reasons"] or [""])[0]) for p, b, r in out if r["decision"] == "04"]
-    k = os.path.join(V6, "k1axes", "p1_v1")
-    for f in sorted(os.listdir(k)):
-        ca = "_goc" if f.startswith("_goc__") else f.split("__")[0]
-        if ca in KIEM_PP:
-            out.append((os.path.join(k, f), "kiem_pp", f, ca))
-    assert sum(b == "v2" for _, b, _, _ in out) == 21 and sum(b == "kiem_pp" for _, b, _, _ in out) == 120, len(out)
+def ds(bo: str = "p1_tunhien_v2") -> list:
+    """Mọi tệp K1 (tag 2611) ra 04 trong `bo`. Riêng v2 (lần đầu, 2.31) kèm 120 tệp T1.x để kiểm phương pháp."""
+    d = os.path.join(V6, bo)
+    rows = [json.loads(l) for l in open(os.path.join(d, "_kiem", "k1_ket_qua_2611.jsonl"), encoding="utf-8")]
+    out = [(os.path.join(d, r["file"]), bo[-2:], r["file"], (r["reasons"] or [""])[0]) for r in rows if r["decision"] == "04"]
+    if bo == "p1_tunhien_v2":
+        k = os.path.join(V6, "k1axes", "p1_v1")
+        for f in sorted(os.listdir(k)):
+            ca = "_goc" if f.startswith("_goc__") else f.split("__")[0]
+            if ca in KIEM_PP:
+                out.append((os.path.join(k, f), "kiem_pp", f, ca))
+        assert sum(b == "v2" for _, b, _, _ in out) == 21 and sum(b == "kiem_pp" for _, b, _, _ in out) == 120, len(out)
     return out
 
 
-def run() -> None:
+def run(bo: str = "p1_tunhien_v2") -> None:
     import soundfile as sf
     import torch
     from pyannote.audio import Inference, Model
-    if os.path.exists(OUT):
-        raise SystemExit(f"Đã có {OUT}; không ghi đè")
+    out_p = os.path.join(V6, bo, "_kiem", "doc_lap_2611.jsonl")
+    if os.path.exists(out_p):
+        raise SystemExit(f"Đã có {out_p}; không ghi đè")
     torch.set_num_threads(4)
     bh = Inference(Model.from_pretrained("pyannote/brouhaha"))
     rows = []
-    for i, (p, bo, f, ly) in enumerate(ds()):
+    for i, (p, nhom, f, ly) in enumerate(ds(bo)):
         y, sr = sf.read(p, dtype="float32", always_2d=True)
         y = y.mean(1)
         if sr != SR:
             raise SystemExit(f"{f}: sr={sr}, cần 16 kHz")
         o = bh({"waveform": torch.from_numpy(y[None]), "sample_rate": SR})
-        rows.append({"bo": bo, "file": f, "k1": ly, **so_do(y, np.asarray(o.data)[:, 0], o.sliding_window.step)})
-        print(i + 1, bo, f, rows[-1], flush=True)
-    with open(OUT, "w", encoding="utf-8") as fh:
+        rows.append({"bo": nhom, "file": f, "k1": ly, **so_do(y, np.asarray(o.data)[:, 0], o.sliding_window.step)})
+        print(i + 1, nhom, f, rows[-1], flush=True)
+    with open(out_p, "w", encoding="utf-8") as fh:
         fh.writelines(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
 
 
@@ -91,4 +94,7 @@ def selftest() -> None:
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    {"run": run, "selftest": selftest}[sys.argv[1]]()
+    if sys.argv[1] == "run":
+        run(sys.argv[2] if len(sys.argv) > 2 else "p1_tunhien_v2")
+    else:
+        selftest()

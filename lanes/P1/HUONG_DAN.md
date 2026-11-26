@@ -79,7 +79,8 @@ Chạy từ gốc repo, với biến môi trường ở mục 3.
 
 # Đo độc lập cho tệp K1 chặn (cách đếm P1; luật trong BAO_CAO_2611.md mục 4)
 D:/venv_brouhaha/Scripts/python.exe -I experts/P1/build_cond/do_doc_lap.py selftest
-D:/venv_brouhaha/Scripts/python.exe -I experts/P1/build_cond/do_doc_lap.py run
+D:/venv_brouhaha/Scripts/python.exe -I experts/P1/build_cond/do_doc_lap.py run p1_tunhien_v2   # kèm 120 tệp T1.x kiểm phương pháp
+D:/venv_brouhaha/Scripts/python.exe -I experts/P1/build_cond/do_doc_lap.py run p1_tunhien_v1
 
 # T1.x: bảng theo hàng Constraint, và so trước / sau bản sửa C4
 .venv/Scripts/python.exe experts/P1/coverage/theo_hang.py p1_v1_c4

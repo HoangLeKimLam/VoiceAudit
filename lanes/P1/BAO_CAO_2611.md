@@ -16,11 +16,15 @@
 | chỉ số | trước | nay | đích |
 |---|---|---|---|
 | Hàng Constraint có bài kiểm chủ động và đạt | 9/24 (25/11) | **11/24** | 24/24 |
-| K1 chặn oan tệp thật hợp lệ, cách đếm của nhóm | 63/1 377 = 4,6 % (v1, 22/11) | v2 dev: **21/265 = 7,9 %** (5,2–11,8) | ≤ 2 % |
-| Như trên, cách đếm P1 (chặn đúng nếu đo độc lập xác nhận vi phạm) | chưa tính | v2 dev: **10/265 = 3,8 %** (2,1–6,8) | ≤ 2 % |
+| K1 chặn oan v1, cách đếm của nhóm | 63/1 377 = 4,6 % (22/11) | **48/1 368 = 3,5 %** (2,7–4,6) | ≤ 2 % |
+| K1 chặn oan v1, cách đếm P1 (chặn đúng nếu đo độc lập xác nhận vi phạm) | chưa tính | **20/1 368 = 1,5 %** (0,9–2,2); vi 2,1 %, en 0,2 % | ≤ 2 % |
+| K1 chặn oan v2 dev, cách đếm của nhóm | — | **21/265 = 7,9 %** (5,2–11,8) | ≤ 2 % |
+| K1 chặn oan v2 dev, cách đếm P1 | — | **10/265 = 3,8 %** (2,1–6,8) | ≤ 2 % |
 | Hàng ồn SNR, cách đo đồng thuận (dev, chưa cài) | — | chặn oan có trọng số 1,8 % (v4 dev), 1,9 % (v3 dev) | ≤ 2 % |
 
-- Số v1 và v2 là **hai bộ khác nhau**, không so trực tiếp được. Lượt chạy lại K1 trên v1 (sau hai bản sửa 23/11 và 25/11) đang chạy, mới được khoảng 1/3.
+- Số v1 và v2 là **hai bộ khác nhau**, không so trực tiếp được.
+- v1 đo lại sau hai bản sửa 23/11 và 25/11. Fold 3–4 của v1 đã mở ngày 23/11, nên số v1 chỉ để báo. v2 dev là bộ sạch, nhưng mới có 265 tệp.
+- Trên cả hai bộ, nguồn chặn oan chính là **«quá ít tiếng nói» ở tệp tiếng Việt**.
 - Req 9, 12, 13, 14 chưa đo: cần pipeline đầy đủ và gói `du_lieu_P1.tar` (natvi / naten, checkpoint bộ phát hiện), máy P1 chưa có. P1 ưu tiên làm đúng các hàng K1 trước.
 
 ---
@@ -178,9 +182,27 @@ Nguyên nhân dưới đây đều **đã đo**, chưa sửa K1. Chi tiết và 
 
 ---
 
-## 4. Số chặn oan K1 trên v2 dev (26/11), chi tiết
+## 4. Số chặn oan K1 trên tệp thật (26/11), chi tiết
 
-- `chay_k1.py run --bo p1_tunhien_v2 --dev`: 265 tệp, fold 1–2. Đã kiểm không có tệp test.
+### 4.1 v1: 1 368 tệp accept (`chay_k1.py run --bo p1_tunhien_v1 --tag 2611`)
+
+| lý do 04 | 22/11 | 26/11 | đo độc lập xác nhận vi phạm (26/11) |
+|---|---|---|---|
+| quá ít tiếng nói | 38 | 26 | 12; 14 không xác nhận (13 vi, 1 en; Brouhaha đo 31–100 % lời) |
+| quá nhỏ | 10 | 10 | 10/10 |
+| băng hẹp | 6 | 6 | 6/6 |
+| cắt đỉnh nặng | 5 | 5 | chưa có phép đo độc lập, nên tính chặn oan |
+| quá 4 người | 2 | 1 | như trên |
+| **tổng** | **61** | **48** | 28 xác nhận, 20 chặn oan |
+
+- Cách đếm nhóm: **48/1 368 = 3,5 %** (en 12/450 = 2,7 %, vi 36/918 = 3,9 %). Cách đếm P1: **20/1 368 = 1,5 %** (0,9–2,2) (en 1/450 = 0,2 %, vi 19/918 = 2,1 %).
+- So 22/11 trên cùng tệp: gỡ được 14 (13 «quá ít tiếng nói» nhờ AST 23/11 và C4 25/11, 1 «quá 4 người»).
+- **Có 1 ca tụt:** `vi/p1n_vi_Op30S3w9RAI_1` mới bị chặn sau C4 (K1 đếm 29,7 s / 120 s, sát mốc 30 %). Brouhaha đo 99 % lời. Hai đoạn khác cùng video đã bị chặn từ 22/11 với cùng mâu thuẫn, nên video này là ca rõ để chẩn đoán mặt nạ lời của K1.
+- 5 ca cắt đỉnh bị tính chặn oan chỉ vì chưa có phép đo cắt đỉnh khác phương pháp. Nếu thêm phép đo đó (chốt luật trước) thì số theo cách đếm P1 có thể giảm.
+
+### 4.2 v2 dev: 265 tệp (`chay_k1.py run --bo p1_tunhien_v2 --tag 2611 --dev`)
+
+- 265 tệp, fold 1–2. Đã kiểm không có tệp test.
 - Phép đo độc lập: `experts/P1/build_cond/do_doc_lap.py`, mặt nạ lời nói là VAD Brouhaha. Luật chốt trước khi đo. Phương pháp đã kiểm trên tệp dựng biết đáp án: tách sạch băng rộng / băng hẹp quanh −50 dB, nhận đúng mức −41,5 dBFS. Riêng tỉ lệ lời, Brouhaha đếm dư vài điểm, nên phép xác nhận này nghiêng về bảo thủ.
 
 | lý do 04 | tệp (video) | đo độc lập xác nhận vi phạm |
@@ -202,7 +224,8 @@ Nguyên nhân dưới đây đều **đã đo**, chưa sửa K1. Chi tiết và 
 |---|---|
 | Dùng hay không dùng khoảng 63 video đã gỡ (mục 2) | Huấn, có thể hỏi nhóm trưởng / P0 |
 | Duyệt ứng viên sửa cách đo các hàng K1 (N1–N4, B1–B2, C1–C3, D1) rồi chấm trên dev theo luật chốt ở `PHAN_TICH_K1_2611.md` mục 5 | Huấn duyệt, P1 làm |
-| Chẩn đoán «quá ít tiếng nói» trên tệp vi thật (nguồn chặn oan chính) | P1 |
+| Chẩn đoán «quá ít tiếng nói» trên tệp vi thật (nguồn chặn oan chính; bắt đầu từ `Op30S3w9RAI` và `Q_J_ZYAFw6Y`, nơi Brouhaha đo > 90 % lời mà K1 đếm < 30 %) | P1 |
+| Thêm phép đo độc lập cho cắt đỉnh (chốt luật trước) để đếm theo cách P1 | Huấn duyệt, P1 làm |
 | Huấn nghe: 9 đoạn v2 Gemini gắn cờ, 12 bản gốc (nhãn SNR), trang nghe 64 tệp hàng ồn | Huấn |
 | Tự ghi bộ kiểm hàng Kiểu nói (thì thầm / la hét / hát), ≥ 5 người mỗi ngôn ngữ: kịch bản `lanes/P1/KICH_BAN_TU_GHI_KIEU_NOI.md` | Huấn tổ chức |
 | Cài cách đo đồng thuận vào `vaudit/cond.py`, mở test một lần | Huấn duyệt |
